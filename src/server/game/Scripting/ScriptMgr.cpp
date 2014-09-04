@@ -858,19 +858,6 @@ bool ScriptMgr::OnQuestSelect(Player* player, Creature* creature, Quest const* q
     return tmpscript->OnQuestSelect(player, creature, quest);
 }
 
-bool ScriptMgr::OnQuestComplete(Player* player, Creature* creature, Quest const* quest)
-{
-    ASSERT(player);
-    ASSERT(creature);
-    ASSERT(quest);
-#ifdef ELUNA
-    if (sEluna->OnQuestComplete(player, creature, quest))
-    {
-        player->PlayerTalkClass->ClearMenus();
-        return false;
-    }
-#endif
-
     GET_SCRIPT_RET(CreatureScript, creature->GetScriptId(), tmpscript, false);
     player->PlayerTalkClass->ClearMenus();
     return tmpscript->OnQuestComplete(player, creature, quest);
@@ -1560,6 +1547,11 @@ void ScriptMgr::OnPlayerUpdateZone(Player* player, uint32 newZone, uint32 newAre
     sEluna->OnUpdateZone(player, newZone, newArea);
 #endif
     FOREACH_SCRIPT(PlayerScript)->OnUpdateZone(player, newZone, newArea);
+}
+
+void ScriptMgr::OnQuestStatusChange(Player* player, uint32 questId, QuestStatus status)
+{
+    FOREACH_SCRIPT(PlayerScript)->OnQuestStatusChange(player, questId, status);
 }
 
 // Account
