@@ -198,9 +198,6 @@ enum UlduarGameObjects
     GO_RAZOR_HARPOON_4                      = 194519,
     GO_RAZOR_BROKEN_HARPOON                 = 194565,
 
-    GO_MIMIRON_ELEVATOR                   = 194749,
-    GO_MIMIRON_TRAIN                      = 194675,
-
     GO_WAY_TO_YOGG                        = 194255,
 
     // XT-002
@@ -210,15 +207,13 @@ enum UlduarGameObjects
     GO_IRON_COUNCIL_DOOR                    = 194554,
     GO_ARCHIVUM_DOOR                        = 194556,
 
+    GO_MIMIRON_TRAIN                      = 194675,
+
     // Kologarn
     GO_KOLOGARN_CHEST_HERO                  = 195047,
     GO_KOLOGARN_CHEST                       = 195046,
     GO_KOLOGARN_BRIDGE                      = 194232,
     GO_KOLOGARN_DOOR                        = 194553,
-	
-	GO_MIMIRON_DOOR_1                     = 194776,
-    GO_MIMIRON_DOOR_2                     = 194774,
-    GO_MIMIRON_DOOR_3                     = 194775,
 	
     // Hodir
     GO_HODIR_ENTRANCE                       = 194442,
@@ -341,6 +336,8 @@ enum UlduarData
     DATA_MIMIRON_ELEVATOR,
     DATA_MIMIRON_TRAM,
     DATA_MIMIRON_BUTTON,
+    DATA_CALL_TRAM,
+    DATA_AERIAL_UNIT,
 
 	// Thorim
     DATA_RUNIC_COLOSSUS,

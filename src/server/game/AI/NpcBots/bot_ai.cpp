@@ -4388,7 +4388,7 @@ bool bot_minion_ai::Equip(uint32 itemId, uint8 slot)
         }
 
         me->SetUInt32Value(UNIT_VIRTUAL_ITEM_SLOT_ID + slot, itemId);
-        me->SetAttackTime(WeaponAttackType(slot), einfo && einfo->ItemEntry[slot] == itemId ? me->GetCreatureTemplate()->baseattacktime : proto->Delay); //set attack speed
+		me->SetAttackTime(WeaponAttackType(slot), einfo && einfo->ItemEntry[slot] == itemId ? me->GetCreatureTemplate()->BaseAttackTime : proto->Delay); //set attack speed
         master->UpdateBotEquips(me, slot, itemId);
 
         //only for non-standard items
