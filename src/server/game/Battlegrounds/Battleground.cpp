@@ -752,7 +752,7 @@ void Battleground::EndBattleground(uint32 winner)
     if (isBattleground() && sWorld->getBoolConfig(CONFIG_BATTLEGROUND_STORE_STATISTICS_ENABLE))
     {
         stmt->setUInt64(0, battleground_id);
-        stmt->setUInt8(2, m_BracketId + 1);
+        stmt->setUInt8(2, GetUniqueBracketId());
         stmt->setUInt8(3, GetTypeID());
         CharacterDatabase.Execute(stmt);
     }
@@ -1847,4 +1847,9 @@ bool Battleground::CheckAchievementCriteriaMeet(uint32 criteriaId, Player const*
 {
     TC_LOG_ERROR("bg.battleground", "Battleground::CheckAchievementCriteriaMeet: No implementation for criteria %u", criteriaId);
     return false;
+}
+
+uint8 Battleground::GetUniqueBracketId() const
+{
+    return GetMinLevel() / 10;
 }
