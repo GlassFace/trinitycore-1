@@ -3488,7 +3488,7 @@ bool bot_minion_ai::OnGossipSelect(Player* player, Creature* creature, uint32 se
     {
         case 0: //any kind of fail
         {
-            me->MonsterSay("...", LANG_UNIVERSAL, player);
+            me->Say("...", LANG_UNIVERSAL, player);
             break;
         }
         case 1: //return to main menu
@@ -3720,7 +3720,7 @@ bool bot_minion_ai::OnGossipSelect(Player* player, Creature* creature, uint32 se
                     me->GetBotClass() == CLASS_ROGUE || (me->GetBotClass() == CLASS_SHAMAN && IsMelee()) ||
                     me->GetBotClass() == CLASS_PALADIN || me->GetBotClass() == CLASS_HUNTER)
                 {
-                    me->MonsterSay("What, with my bare hands? No way", LANG_UNIVERSAL, player);
+                    me->Say("What, with my bare hands? No way", LANG_UNIVERSAL, player);
                     break;
                 }
             }
@@ -3728,7 +3728,7 @@ bool bot_minion_ai::OnGossipSelect(Player* player, Creature* creature, uint32 se
             {
                 if (me->GetBotClass() == CLASS_ROGUE)
                 {
-                    me->MonsterSay("No. Never", LANG_UNIVERSAL, player);
+                    me->Say("No. Never", LANG_UNIVERSAL, player);
                     break;
                 }
             }
@@ -3736,19 +3736,19 @@ bool bot_minion_ai::OnGossipSelect(Player* player, Creature* creature, uint32 se
             {
                 if (me->GetBotClass() == CLASS_HUNTER)
                 {
-                    me->MonsterSay("Yeah, very funny...", LANG_UNIVERSAL, player);
+                    me->Say("Yeah, very funny...", LANG_UNIVERSAL, player);
                     break;
                 }
             }
 
             if (Unequip(action - (GOSSIP_ACTION_INFO_DEF + 1)))
-                me->MonsterSay("Hm...", LANG_UNIVERSAL, player);
+                me->Say("Hm...", LANG_UNIVERSAL, player);
             break;
         }
         case GOSSIP_SENDER_EQUIP_RESET: //equips change s4a: reset equipment
         {
             if (ResetEquipment(action - (GOSSIP_ACTION_INFO_DEF + 1)))
-                me->MonsterSay(RAND<char*>("Fine", "Very well", "Alright", "Yeah"), LANG_UNIVERSAL, player);
+                me->Say(RAND<char*>("Fine", "Very well", "Alright", "Yeah"), LANG_UNIVERSAL, player);
             break;
         }
         //equips change s4b: Equip item
@@ -3772,7 +3772,7 @@ bool bot_minion_ai::OnGossipSelect(Player* player, Creature* creature, uint32 se
         case GOSSIP_SENDER_EQUIP_NECK:      //18 - 1 neck
         {
             if (Equip(action - GOSSIP_ACTION_INFO_DEF, sender - GOSSIP_SENDER_EQUIP))
-                me->MonsterSay(RAND<char*>("Fine", "Very well", "Alright", "Yeah", "Good", "Okay"), LANG_UNIVERSAL, player);
+                me->Say(RAND<char*>("Fine", "Very well", "Alright", "Yeah", "Good", "Okay"), LANG_UNIVERSAL, player);
             break;
         }
         case GOSSIP_SENDER_ROLES_TOGGLE: //ROLES 2: set/unset
@@ -4367,7 +4367,7 @@ bool bot_minion_ai::Equip(uint32 itemId, uint8 slot)
         {
             if (!Unequip(slot))
             {
-                me->MonsterSay("You have no space for my current item", LANG_UNIVERSAL, master);
+                me->Say("You have no space for my current item", LANG_UNIVERSAL, master);
                 return false;
             }
         }
@@ -4420,7 +4420,7 @@ bool bot_minion_ai::Equip(uint32 itemId, uint8 slot)
     {
         if (!Unequip(slot))
         {
-            me->MonsterSay("You have no space for my current item", LANG_UNIVERSAL, master);
+            me->Say("You have no space for my current item", LANG_UNIVERSAL, master);
             return false;
         }
 

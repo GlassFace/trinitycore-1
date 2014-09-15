@@ -1746,7 +1746,7 @@ namespace LuaPlayer
         uint32 lang = Eluna::CHECKVAL<uint32>(L, 3);
         uint64 guid = Eluna::CHECKVAL<uint64>(L, 4);
 
-        player->Whisper(text, lang, ObjectGuid(guid));
+		player->Whisper(text, LANG_UNIVERSAL, player);
         return 0;
     }
 
@@ -1763,7 +1763,7 @@ namespace LuaPlayer
         std::string text = Eluna::CHECKVAL<std::string>(L, 2);
         uint32 lang = Eluna::CHECKVAL<uint32>(L, 3);
 
-        player->Yell(text, lang);
+		player->Yell(text, LANG_UNIVERSAL);
         return 0;
     }
 
@@ -1772,7 +1772,7 @@ namespace LuaPlayer
         std::string text = Eluna::CHECKVAL<std::string>(L, 2);
         uint32 lang = Eluna::CHECKVAL<uint32>(L, 3);
 
-        player->Say(text, lang);
+		player->Say(text, LANG_UNIVERSAL);
         return 0;
     }
 
