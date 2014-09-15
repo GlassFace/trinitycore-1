@@ -21,6 +21,7 @@
 #include "InstanceScript.h"
 #include "ObjectMgr.h"
 #define UlduarScriptName "instance_ulduar"
+#define DataHeader "UU"
 
 extern Position const ObservationRingKeepersPos[4];
 extern Position const YSKeepersPos[4];
