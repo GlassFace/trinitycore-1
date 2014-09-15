@@ -260,7 +260,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                 if (!sEluna->OnChat(sender, type, lang, msg))
                     return;
 #endif
-                sender->Say(msg, lang);
+                sender->Say(msg, Language(lang));
             }
             else if (type == CHAT_MSG_EMOTE)
             {
@@ -276,7 +276,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
                 if (!sEluna->OnChat(sender, type, lang, msg))
                     return;
 #endif
-                sender->Yell(msg, lang);
+                sender->Yell(msg, Language(lang));
             }
         } break;
         case CHAT_MSG_WHISPER:
@@ -321,7 +321,7 @@ void WorldSession::HandleMessagechatOpcode(WorldPacket& recvData)
             if (!sEluna->OnChat(GetPlayer(), type, lang, msg, receiver))
                 return;
 #endif
-            GetPlayer()->Whisper(msg, lang, receiver->GetGUID());
+            GetPlayer()->Whisper(msg, Language(lang), receiver);
         } break;
         case CHAT_MSG_PARTY:
         case CHAT_MSG_PARTY_LEADER:
