@@ -55,7 +55,9 @@
 #include "BattlegroundMgr.h"
 #include "Battlefield.h"
 #include "BattlefieldMgr.h"
+#ifdef ELUNA
 #include "LuaEngine.h"
+#endif
 
 //Bot
 #include "bothelper.h"
@@ -117,9 +119,11 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recvData)
     if (_player->PlayerTalkClass->GetGossipMenu().GetSenderGUID() != guid)
         return;
 
+#ifdef ELUNA
+    Item* item = NULL;
+#endif
     Creature* unit = NULL;
     GameObject* go = NULL;
-    Item* item = NULL;
     if (IS_CRE_OR_VEH_GUID(guid))
     {
         unit = GetPlayer()->GetNPCIfCanInteractWith(guid, UNIT_NPC_FLAG_NONE);

@@ -42,6 +42,8 @@ public:
     // that will only be needed on lua side and will not be managed by TC/mangos/<core>
     static void Register(lua_State* L, const char* name, bool gc = false)
     {
+        ASSERT(!tname || name);
+
         tname = name;
         manageMemory = gc;
 

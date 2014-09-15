@@ -35,7 +35,9 @@
 #include "ScriptMgr.h"
 #include "SpellScript.h"
 #include "Vehicle.h"
+#ifdef ELUNA
 #include "LuaEngine.h"
+#endif
 #include "Config.h"
 
 AuraApplication::AuraApplication(Unit* target, Unit* caster, Aura* aura, uint8 effMask):

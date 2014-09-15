@@ -10,14 +10,28 @@
 #include "Common.h"
 #include "SharedDefines.h"
 #ifdef TRINITY
+#include "QueryResult.h"
 #ifdef CATA
 #include "Object.h"
 #endif
 #else
 #include "ObjectGuid.h"
+#include "Database/QueryResult.h"
+#endif
+
+// Some dummy includes containing BOOST_VERSION:
+// ObjectAccessor.h Config.h Log.h
+#ifdef BOOST_VERSION
+#define USING_BOOST
+#endif
+
+#ifdef USING_BOOST
+#include <boost/thread/locks.hpp>
+#include <boost/thread/shared_mutex.hpp>
 #endif
 
 #ifdef TRINITY
+typedef QueryResult ElunaQuery;
 #ifndef CATA
 typedef uint64 ObjectGuid;
 #endif
@@ -26,6 +40,7 @@ typedef uint64 ObjectGuid;
 #define ELUNA_LOG_DEBUG(...)    TC_LOG_DEBUG("eluna", __VA_ARGS__);
 #define GET_GUID                GetGUID
 #else
+typedef QueryNamedResult ElunaQuery;
 #define MAKE_NEW_GUID(l, e, h)  ObjectGuid(h, e, l)
 #define GUID_ENPART(guid)       ObjectGuid(guid).GetEntry()
 #define GUID_LOPART(guid)       ObjectGuid(guid).GetCounter()
@@ -41,7 +56,12 @@ typedef uint64 ObjectGuid;
 #endif
 
 #ifndef UNORDERED_MAP
+#include <unordered_map>
 #define UNORDERED_MAP std::unordered_map
+#endif
+#ifndef UNORDERED_SET
+#include <unordered_set>
+#define UNORDERED_SET std::unordered_set
 #endif
 
 class Unit;
@@ -90,6 +110,35 @@ namespace ElunaUtil
         uint32 i_hostile;
 
         WorldObjectInRangeCheck(WorldObjectInRangeCheck const&);
+    };
+
+    /*
+     * Usage:
+     * Inherit this class, then when needing lock, use
+     * ReadGuard lock(_lock);
+     * or
+     * WriteGuard lock(_lock);
+     * 
+     * The lock is automatically released at end of scope
+     */
+    class RWLockable
+    {
+    public:
+
+#ifdef USING_BOOST
+        typedef boost::shared_mutex LockType;
+        typedef boost::shared_lock<boost::shared_mutex> ReadGuard;
+        typedef boost::unique_lock<boost::shared_mutex> WriteGuard;
+#else
+        typedef ACE_RW_Thread_Mutex LockType;
+        typedef ACE_Read_Guard<LockType> ReadGuard;
+        typedef ACE_Write_Guard<LockType> WriteGuard;
+#endif
+
+        LockType& GetLock() { return _lock; }
+
+    private:
+        LockType _lock;
     };
 };
 

@@ -953,7 +953,7 @@ class npc_runic_colossus : public CreatureScript
 
                 if (BarrierTimer <= diff)
                 {
-                    me->MonsterTextEmote(EMOTE_BARRIER, 0, true);
+					me->TextEmote(EMOTE_BARRIER);
                     DoCast(me, SPELL_RUNIC_BARRIER);
                     BarrierTimer = urand(35000, 45000);
                 }
@@ -1084,7 +1084,7 @@ public:
 
         void EnterCombat(Unit* /*who*/)
         {
-            me->MonsterTextEmote(EMOTE_MIGHT, 0, true);
+			me->TextEmote(EMOTE_MIGHT);
             DoCast(me, SPELL_RUNIC_FORTIFICATION, true);
         }
 

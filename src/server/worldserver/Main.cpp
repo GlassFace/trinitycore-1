@@ -47,6 +47,9 @@
 #include "SystemConfig.h"
 #include "WorldSocket.h"
 #include "WorldSocketMgr.h"
+#ifdef ELUNA
+#include "LuaEngine.h"
+#endif
 
 using namespace boost::program_options;
 

@@ -62,7 +62,10 @@
 #include "World.h"
 #include "WorldPacket.h"
 #include "WorldSession.h"
+#ifdef ELUNA
 #include "LuaEngine.h"
+#include "ElunaEventMgr.h"
+#endif
 
 #include <cmath>
 
@@ -312,6 +315,9 @@ Unit::~Unit()
 
 void Unit::Update(uint32 p_time)
 {
+#ifdef ELUNA
+    elunaEvents->Update(p_time);
+#endif
     // WARNING! Order of execution here is important, do not change.
     // Spells must be processed with event system BEFORE they go to _UpdateSpells.
     // Or else we may have some SPELL_STATE_FINISHED spells stalled in pointers, that is bad.
@@ -18217,7 +18223,7 @@ void Unit::Whisper(uint32 textId, Player* target, bool isBossWhisper /*= false*/
     BroadcastText const* bct = sObjectMgr->GetBroadcastText(textId);
     if (!bct)
     {
-        TC_LOG_ERROR("entities.unit", "WorldObject::MonsterWhisper: `broadcast_text` was not %u found", textId);
+        TC_LOG_ERROR("entities.unit", "WorldObject::Whisper: `broadcast_text` was not %u found", textId);
         return;
     }
 

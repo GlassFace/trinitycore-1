@@ -446,7 +446,7 @@ public:
                     me->Relocate(*target);
 
                 if (doCast(target, GetSpell(REBIRTH_1))) //rezzing
-					me->MonsterWhisper("Rezzing You", master);
+					me->Whisper("Rezzing You", LANG_UNIVERSAL, master);
 
                 return;
             }
@@ -471,7 +471,7 @@ public:
 
                 if (doCast(target, GetSpell(REBIRTH_1))) //rezzing
                 {
-					me->MonsterWhisper("Rezzing You", tPlayer);
+					me->Whisper("Rezzing You", LANG_UNIVERSAL, tPlayer);
                     return;
                 }
             }

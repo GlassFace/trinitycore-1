@@ -414,7 +414,7 @@ public:
                     me->Relocate(*target);
 
                 if (doCast(target, GetSpell(REBIRTH_1))) //rezzing
-					me->MonsterWhisper("Rezzing You", master);
+					me->Whisper("Rezzing You", LANG_UNIVERSAL, master);
 
                 return;
             }
@@ -439,7 +439,7 @@ public:
 
                 if (doCast(target, GetSpell(REBIRTH_1))) //rezzing
                 {
-					me->MonsterWhisper("Rezzing You", tPlayer);
+					me->Whisper("Rezzing You", LANG_UNIVERSAL, tPlayer);
                     return;
                 }
             }
@@ -576,7 +576,7 @@ public:
                 ////else if (spellId == ENVENOM)
                 ////    msg << "Envenom, ";
                 //msg << "combo points: " << uint32(std::min<uint32>(comboPoints,5));
-                //me->MonsterWhisper(msg.str().c_str(), master->GetGUID());
+                //me->Whisper(msg.str().c_str(), master->GetGUID());
                 if (irand(0, 99) < 20 * (comboPoints > 5 ? 5 : comboPoints))
                 {
                     currentSpell = RELENTLESS_STRIKES_EFFECT;
@@ -594,7 +594,7 @@ public:
                 }
                 else
                     comboPoints = 0;
-                //me->MonsterWhisper(msg2.str().c_str(), master->GetGUID());
+                //me->Whisper(msg2.str().c_str(), master->GetGUID());
             }
             else if (spellId == GetSpell(SINISTER_STRIKE_1) ||
                 spellId == GetSpell(BACKSTAB_1)/* ||
@@ -611,7 +611,7 @@ public:
                 //msg << " set to " << uint32(comboPoints);
                 //if (tempAddCP)
                 //    msg << " + " << uint32(tempAddCP) << " (triggered)";
-                //me->MonsterWhisper(msg.str().c_str(), master->GetGUID());
+                //me->Whisper(msg.str().c_str(), master->GetGUID());
                 if (tempAddCP)
                 {
                     comboPoints += tempAddCP;
@@ -626,7 +626,7 @@ public:
                 //msg << "2 cp generated (Mutilate), set to " << uint32(comboPoints);
                 //if (tempAddCP)
                 //    msg << " + " << uint32(tempAddCP) << " (triggered)";
-                //me->MonsterWhisper(msg.str().c_str(), master->GetGUID());
+                //me->Whisper(msg.str().c_str(), master->GetGUID());
                 if (tempAddCP)
                 {
                     comboPoints += tempAddCP;
@@ -642,7 +642,7 @@ public:
                 //    msg << "(Seal Fate)";
                 //else if (spellId == RUTHLESSNESS_EFFECT)
                 //    msg << "(Ruthleness)";
-                //me->MonsterWhisper(msg.str().c_str(), master->GetGUID());
+                //me->Whisper(msg.str().c_str(), master->GetGUID());
             }
 
             //Glyph of Sinister Strike (20% to add cp on hit)
@@ -651,7 +651,7 @@ public:
             if (currentSpell == GetSpell(SINISTER_STRIKE_1) && (spellId == SEAL_FATE_EFFECT || urand(0,100) >= 20))
             {
                 ++tempAddCP;
-                //me->MonsterWhisper("1 temp cp generated (glyph of SS)", master->GetGUID());
+                //me->Whisper("1 temp cp generated (glyph of SS)", master->GetGUID());
             }
 
             //ENERGY COST REDUCTION

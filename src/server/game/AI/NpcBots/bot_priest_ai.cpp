@@ -322,14 +322,14 @@ public:
                     GC_Timer = temptimer;
                     if (target->GetTypeId() == TYPEID_PLAYER)
                     {
-                        me->MonsterWhisper("Guardian Spirit on you!", target->ToPlayer());
+						me->Whisper("Guardian Spirit on you!", LANG_UNIVERSAL, target->ToPlayer());
                         SetSpellCooldown(GUARDIAN_SPIRIT_1, 90000); //1.5 min
                     }
                     else
                     {
                         std::ostringstream msg;
                         msg << "Guardian Spirit on " << (target == me ? "myself" : target->GetName()) << '!';
-                        me->MonsterWhisper(msg.str().c_str(), master);
+						me->Whisper(msg.str().c_str(), LANG_UNIVERSAL, master);
                         SetSpellCooldown(GUARDIAN_SPIRIT_1, 30000); //30 sec for creatures
                     }
 
@@ -352,14 +352,14 @@ public:
                     GC_Timer = temptimer;
                     if (target->GetTypeId() == TYPEID_PLAYER)
                     {
-                        me->MonsterWhisper("Pain Suppression on you!", target->ToPlayer());
+						me->Whisper("Pain Suppression on you!", LANG_UNIVERSAL, target->ToPlayer());
                         SetSpellCooldown(PAIN_SUPPRESSION_1, 60000); //60 sec
                     }
                     else
                     {
                         std::ostringstream msg;
                         msg << "Guardin Spirit on " << (target == me ? "myself" : target->GetName()) << '!';
-                        me->MonsterWhisper(msg.str().c_str(), master);
+						me->Whisper(msg.str().c_str(), LANG_UNIVERSAL, master);
                         SetSpellCooldown(PAIN_SUPPRESSION_1, 15000); //15 sec for creatures
                     }
 
@@ -679,7 +679,7 @@ public:
                     me->Relocate(*target);
 
                 if (doCast(target, GetSpell(REBIRTH_1))) //rezzing
-					me->MonsterWhisper("Rezzing You", master);
+					me->Whisper("Rezzing You", LANG_UNIVERSAL, master);
 
                 return;
             }
@@ -704,7 +704,7 @@ public:
 
                 if (doCast(target, GetSpell(REBIRTH_1))) //rezzing
                 {
-					me->MonsterWhisper("Rezzing You", tPlayer);
+					me->Whisper("Rezzing You", LANG_UNIVERSAL, tPlayer);
                     return;
                 }
             }

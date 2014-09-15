@@ -32,7 +32,9 @@
 #include "CreatureAIImpl.h"
 #include "Player.h"
 #include "WorldPacket.h"
+#ifdef ELUNA
 #include "LuaEngine.h"
+#endif
 #include "WorldSession.h"
 
 namespace
@@ -555,6 +557,10 @@ void ScriptMgr::OnCreateMap(Map* map)
 {
     ASSERT(map);
 
+#ifdef ELUNA
+    sEluna->OnCreate(map);
+#endif
+
     SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsWorldMap);
         itr->second->OnCreate(map);
     SCR_MAP_END;
@@ -566,16 +572,15 @@ void ScriptMgr::OnCreateMap(Map* map)
     SCR_MAP_BGN(BattlegroundMapScript, map, itr, end, entry, IsBattleground);
         itr->second->OnCreate((BattlegroundMap*)map);
     SCR_MAP_END;
-
-#ifdef ELUNA
-    sEluna->OnCreate(map);
-#endif
 }
 
 void ScriptMgr::OnDestroyMap(Map* map)
 {
     ASSERT(map);
 
+#ifdef ELUNA
+    sEluna->OnDestroy(map);
+#endif
     SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsWorldMap);
         itr->second->OnDestroy(map);
     SCR_MAP_END;
@@ -587,10 +592,6 @@ void ScriptMgr::OnDestroyMap(Map* map)
     SCR_MAP_BGN(BattlegroundMapScript, map, itr, end, entry, IsBattleground);
         itr->second->OnDestroy((BattlegroundMap*)map);
     SCR_MAP_END;
-
-#ifdef ELUNA
-    sEluna->OnDestroy(map);
-#endif
 }
 
 void ScriptMgr::OnLoadGridMap(Map* map, GridMap* gmap, uint32 gx, uint32 gy)
@@ -634,6 +635,10 @@ void ScriptMgr::OnPlayerEnterMap(Map* map, Player* player)
     ASSERT(map);
     ASSERT(player);
 
+#ifdef ELUNA
+    sEluna->OnMapChanged(player);
+    sEluna->OnPlayerEnter(map, player);
+#endif
     FOREACH_SCRIPT(PlayerScript)->OnMapChanged(player);
 
     SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsWorldMap);
@@ -647,11 +652,6 @@ void ScriptMgr::OnPlayerEnterMap(Map* map, Player* player)
     SCR_MAP_BGN(BattlegroundMapScript, map, itr, end, entry, IsBattleground);
         itr->second->OnPlayerEnter((BattlegroundMap*)map, player);
     SCR_MAP_END;
-
-#ifdef ELUNA
-    sEluna->OnMapChanged(player);
-    sEluna->OnPlayerEnter(map, player);
-#endif
 }
 
 void ScriptMgr::OnPlayerLeaveMap(Map* map, Player* player)
@@ -659,6 +659,9 @@ void ScriptMgr::OnPlayerLeaveMap(Map* map, Player* player)
     ASSERT(map);
     ASSERT(player);
 
+#ifdef ELUNA
+    sEluna->OnPlayerLeave(map, player);
+#endif
     SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsWorldMap);
         itr->second->OnPlayerLeave(map, player);
     SCR_MAP_END;
@@ -670,16 +673,15 @@ void ScriptMgr::OnPlayerLeaveMap(Map* map, Player* player)
     SCR_MAP_BGN(BattlegroundMapScript, map, itr, end, entry, IsBattleground);
         itr->second->OnPlayerLeave((BattlegroundMap*)map, player);
     SCR_MAP_END;
-
-#ifdef ELUNA
-    sEluna->OnPlayerLeave(map, player);
-#endif
 }
 
 void ScriptMgr::OnMapUpdate(Map* map, uint32 diff)
 {
     ASSERT(map);
 
+#ifdef ELUNA
+    sEluna->OnUpdate(map, diff);
+#endif
     SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsWorldMap);
         itr->second->OnUpdate(map, diff);
     SCR_MAP_END;
@@ -691,10 +693,6 @@ void ScriptMgr::OnMapUpdate(Map* map, uint32 diff)
     SCR_MAP_BGN(BattlegroundMapScript, map, itr, end, entry, IsBattleground);
         itr->second->OnUpdate((BattlegroundMap*)map, diff);
     SCR_MAP_END;
-
-#ifdef ELUNA
-    sEluna->OnUpdate(map, diff);
-#endif
 }
 
 #undef SCR_MAP_BGN

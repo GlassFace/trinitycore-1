@@ -64,7 +64,6 @@
 #include "WaypointMovementGenerator.h"
 #include "WeatherMgr.h"
 #include "WorldSession.h"
-#include "LuaEngine.h"
 
 
 std::atomic<bool> World::m_stopEvent(false);

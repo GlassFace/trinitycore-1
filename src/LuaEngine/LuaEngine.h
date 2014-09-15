@@ -20,8 +20,14 @@
 #include "World.h"
 #include "HookMgr.h"
 
+extern "C"
+{
+#include "lua.h"
+};
+
 #ifdef TRINITY
 struct ItemTemplate;
+typedef BattlegroundTypeId BattleGroundTypeId;
 #else
 struct ItemPrototype;
 typedef ItemPrototype ItemTemplate;
@@ -33,6 +39,10 @@ typedef int Difficulty;
 
 struct AreaTriggerEntry;
 class AuctionHouseObject;
+#ifdef TRINITY
+class Battleground;
+typedef Battleground BattleGround;
+#endif
 class Channel;
 class Corpse;
 class Creature;
@@ -103,13 +113,14 @@ public:
     lua_State* L;
     int userdata_table;
 
-    EventMgr* m_EventMgr;
+    EventMgr* eventMgr;
 
     EventBind<HookMgr::ServerEvents>*       ServerEventBindings;
     EventBind<HookMgr::PlayerEvents>*       PlayerEventBindings;
     EventBind<HookMgr::GuildEvents>*        GuildEventBindings;
     EventBind<HookMgr::GroupEvents>*        GroupEventBindings;
     EventBind<HookMgr::VehicleEvents>*      VehicleEventBindings;
+    EventBind<HookMgr::BGEvents>*           BGEventBindings;
 
     EntryBind<HookMgr::PacketEvents>*       PacketEventBindings;
     EntryBind<HookMgr::CreatureEvents>*     CreatureEventBindings;
@@ -163,7 +174,10 @@ public:
 
     // Checks
     template<typename T> static T CHECKVAL(lua_State* L, int narg);
-    template<typename T> static T CHECKVAL(lua_State* L, int narg, T def);
+    template<typename T> static T CHECKVAL(lua_State* L, int narg, T def)
+    {
+        return lua_isnoneornil(L, narg) ? def : CHECKVAL<T>(L, narg);
+    }
     template<typename T> static T* CHECKOBJ(lua_State* L, int narg, bool error = true)
     {
         return ElunaTemplate<T>::check(L, narg, error);
@@ -186,6 +200,7 @@ public:
     void OnQuestAbandon(Player* pPlayer, uint32 questId);
     InventoryResult OnCanUseItem(const Player* pPlayer, uint32 itemEntry);
     void OnLuaStateClose();
+    void OnLuaStateOpen();
     bool OnAddonMessage(Player* sender, uint32 type, std::string& msg, Player* receiver, Guild* guild, Group* group, Channel* channel);
 
     /* Item */
@@ -335,6 +350,12 @@ public:
     void OnUpdate(uint32 diff);
     void OnStartup();
     void OnShutdown();
+
+    /* Battle Ground */
+    void OnBGStart(BattleGround* bg, BattleGroundTypeId bgId, uint32 instanceId);
+    void OnBGEnd(BattleGround* bg, BattleGroundTypeId bgId, uint32 instanceId, Team winner);
+    void OnBGCreate(BattleGround* bg, BattleGroundTypeId bgId, uint32 instanceId);
+    void OnBGDestroy(BattleGround* bg, BattleGroundTypeId bgId, uint32 instanceId);
 };
 template<> Unit* Eluna::CHECKOBJ<Unit>(lua_State* L, int narg, bool error);
 template<> Player* Eluna::CHECKOBJ<Player>(lua_State* L, int narg, bool error);

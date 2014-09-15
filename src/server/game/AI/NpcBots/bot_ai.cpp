@@ -180,7 +180,7 @@ bool bot_ai::doCast(Unit* victim, uint32 spellId, bool triggered, uint64 origina
     {
         //std::ostringstream msg;
         //msg << "casting " << spellInfo->SpellName[0] << " on " << victim->GetName();
-        //me->MonsterWhisper(msg.str().c_str(), master->GetGUID());
+        //me->Whisper(msg.str().c_str(), master->GetGUID());
         me->Relocate(victim);
     }
 
@@ -473,7 +473,7 @@ void bot_minion_ai::RezGroup(uint32 REZZ, Player* gPlayer)
 
         if (doCast(target, REZZ))//rezzing it
         {
-            me->MonsterWhisper("Rezzing You", master);
+			me->Whisper("Rezzing You", LANG_UNIVERSAL, master);
             rezz_cd = 60;
         }
         return;
@@ -500,12 +500,12 @@ void bot_minion_ai::RezGroup(uint32 REZZ, Player* gPlayer)
 
         if (doCast(target, REZZ))//rezzing it
         {
-            me->MonsterWhisper("Rezzing You", tPlayer);
+			me->Whisper("Rezzing You", LANG_UNIVERSAL, tPlayer);
             if (tPlayer != master)
             {
                 std::string rezstr = "Rezzing ";
                 rezstr += tPlayer->GetName();
-                me->MonsterWhisper(rezstr.c_str(), master);
+				me->Whisper(rezstr.c_str(), LANG_UNIVERSAL, master);
             }
             rezz_cd = 60;
             return;
@@ -1582,7 +1582,7 @@ void bot_ai::ReceiveEmote(Player* player, uint32 emote)
                 return;
             }
             SetBotCommandState(COMMAND_STAY);
-            me->MonsterWhisper("Standing Still.", player);
+			me->Whisper("Standing Still.", LANG_UNIVERSAL, player);
             break;
         case TEXT_EMOTE_WAVE:
             if (!IsMinionAI())
@@ -1593,7 +1593,7 @@ void bot_ai::ReceiveEmote(Player* player, uint32 emote)
                 return;
             }
             SetBotCommandState(COMMAND_FOLLOW, true);
-            me->MonsterWhisper("Following!", player);
+			me->Whisper("Following!", LANG_UNIVERSAL, player);
             break;
         default:
             break;
@@ -3519,7 +3519,7 @@ bool bot_minion_ai::OnGossipSelect(Player* player, Creature* creature, uint32 se
                 std::string errorstr = "I can't conjure ";
                 errorstr += iswater ? "water" : "food";
                 errorstr += " yet";
-                me->MonsterWhisper(errorstr.c_str(), player);
+				me->Whisper(errorstr.c_str(), LANG_UNIVERSAL, player);
                 //player->PlayerTalkClass->ClearMenus();
                 //return OnGossipHello(player, me);
                 break;
@@ -3534,13 +3534,13 @@ bool bot_minion_ai::OnGossipSelect(Player* player, Creature* creature, uint32 se
             {
                 foodspell->finish(false);
                 delete foodspell;
-                me->MonsterWhisper("I can't do it right now", player);
+				me->Whisper("I can't do it right now", LANG_UNIVERSAL, player);
             }
             else
             {
                 aftercastTargetGuid = player->GetGUID();
                 foodspell->prepare(&targets);
-                me->MonsterWhisper("Here you go...", player);
+				me->Whisper("Here you go...", LANG_UNIVERSAL, player);
             }
             break;
         }
@@ -3600,7 +3600,7 @@ bool bot_minion_ai::OnGossipSelect(Player* player, Creature* creature, uint32 se
                     msg << " in slot " << uint32(i) << " (" << _getNameForSlot(i + 1) << ')';
                     if (i < BOT_SLOT_RANGED && einfo && einfo->ItemEntry[i] == itemId)
                         msg << " |cffe6cc80|h[!standard item!]|h|r";
-                    me->MonsterWhisper(msg.str().c_str(), master);
+					me->Whisper(msg.str().c_str(), LANG_UNIVERSAL, master);
                 }
             }
 
@@ -3625,7 +3625,7 @@ bool bot_minion_ai::OnGossipSelect(Player* player, Creature* creature, uint32 se
                 if (slot < BOT_SLOT_RANGED && einfo && einfo->ItemEntry[slot] == itemId)
                     msg << " |cffe6cc80|h[!standard item!]|h|r";
 
-                me->MonsterWhisper(msg.str().c_str(), master);
+				me->Whisper(msg.str().c_str(), LANG_UNIVERSAL, master);
             }
 
             //break; //no break here - return to menu
@@ -3857,7 +3857,7 @@ void bot_minion_ai::SummonBotsPet(uint32 entry)
     if (!originalentry)
     {
         //annoy master
-        me->MonsterWhisper("Why am I trying to summon unknown pet!?", master);
+		me->Whisper("Why am I trying to summon unknown pet!?", LANG_UNIVERSAL, master);
         return;
     }
     uint32 armor = 0;
@@ -3867,7 +3867,7 @@ void bot_minion_ai::SummonBotsPet(uint32 entry)
 
     if (!m_botsPet)
     {
-        me->MonsterWhisper("Failed to summon pet!", master);
+		me->Whisper("Failed to summon pet!", LANG_UNIVERSAL, master);
         return;
     }
 
@@ -4380,7 +4380,7 @@ bool bot_minion_ai::Equip(uint32 itemId, uint8 slot)
                 msg << "Cannot find ";
                 _AddItemTemplateLink(master, proto, msg);
                 msg << " (id: " << uint32(itemId) << ")!";
-                me->MonsterWhisper(msg.str().c_str(), master);
+				me->Whisper(msg.str().c_str(), LANG_UNIVERSAL, master);
                 return false;
             }
 
@@ -4430,7 +4430,7 @@ bool bot_minion_ai::Equip(uint32 itemId, uint8 slot)
             msg << "Cannot find ";
             _AddItemTemplateLink(master, proto, msg);
             msg << " (id: " << uint32(itemId) << ")!";
-            me->MonsterWhisper(msg.str().c_str(), master);
+			me->Whisper(msg.str().c_str(), LANG_UNIVERSAL, master);
             return false;
         }
 

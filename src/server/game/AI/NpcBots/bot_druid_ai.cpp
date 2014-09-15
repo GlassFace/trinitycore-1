@@ -793,12 +793,12 @@ public:
             if (doCast(iTarget, INNERVATE))
             {
                 if (iTarget->GetTypeId() == TYPEID_PLAYER)
-                    me->MonsterWhisper("Innervate on You!", iTarget->ToPlayer());
+					me->Whisper("Innervate on You!", LANG_UNIVERSAL, iTarget->ToPlayer());
                 else
                 {
                     std::ostringstream msg;
                     msg << "Innervate on " << (iTarget == me ? "myself" : iTarget->GetName()) << '!';
-                    me->MonsterWhisper(msg.str().c_str(), master);
+					me->Whisper(msg.str().c_str(), LANG_UNIVERSAL, master);
                 }
 
                 SetSpellCooldown(INNERVATE_1, iTarget->GetTypeId() == TYPEID_PLAYER ? 60000 : 20000); //1 min if player and 20 sec if bot
@@ -841,7 +841,7 @@ public:
                     me->Relocate(*target);
 
                 if (doCast(target, GetSpell(REBIRTH_1))) //rezzing
-					me->MonsterWhisper("Rezzing You", master);
+					me->Whisper("Rezzing You", LANG_UNIVERSAL, master);
 
                 return;
             }
@@ -866,7 +866,7 @@ public:
 
                 if (doCast(target, GetSpell(REBIRTH_1))) //rezzing
                 {
-					me->MonsterWhisper("Rezzing You", tPlayer);
+					me->Whisper("Rezzing You", LANG_UNIVERSAL, tPlayer);
                     return;
                 }
             }

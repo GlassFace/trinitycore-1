@@ -90,7 +90,7 @@ public:
             {
                 //std::ostringstream str;
                 //str << "Casting " << spellInfo->SpellName[0] << " on " << victim->GetName();
-                //me->MonsterWhisper(str.str().c_str(), master->GetGUID());
+                //me->Whisper(str.str().c_str(), master->GetGUID());
                 //Set cooldown for runes
                 if (!triggered)
                 {
@@ -206,7 +206,7 @@ public:
                     _runes.runes[i].Cooldown = cooldown;
                     //std::ostringstream str;
                     //str << "Spent rune " << uint32(i) << " (type: " << uint32(runetype) << ')';
-                    //me->MonsterWhisper(str.str().c_str(), master->GetGUID());
+                    //me->Whisper(str.str().c_str(), master->GetGUID());
                     return true;
                 }
             }
@@ -257,7 +257,7 @@ public:
 
             //std::ostringstream str;
             //str << "Failed to convert rune of type: " << uint32(runetype) << ")!";
-            //me->MonsterWhisper(str.str().c_str(), master->GetGUID());
+            //me->Whisper(str.str().c_str(), master->GetGUID());
         }
 
         void ActivateAllRunes()
@@ -414,7 +414,7 @@ public:
             {
                 if (target->GetTypeId() == TYPEID_PLAYER)
                 {
-                    me->MonsterWhisper("Hysteria on You!", target->ToPlayer());
+					me->Whisper("Hysteria on You!", LANG_UNIVERSAL, target->ToPlayer());
                     SetSpellCooldown(HYSTERIA_1, 90000); //1.5 min for player
                 }
                 else
@@ -1340,7 +1340,7 @@ public:
                     me->Relocate(*target);
 
                 if (doCast(target, GetSpell(REBIRTH_1))) //rezzing
-					me->MonsterWhisper("Rezzing You", master);
+					me->Whisper("Rezzing You", LANG_UNIVERSAL, master);
 
                 return;
             }
@@ -1365,7 +1365,7 @@ public:
 
                 if (doCast(target, GetSpell(REBIRTH_1))) //rezzing
                 {
-					me->MonsterWhisper("Rezzing You", tPlayer);
+					me->Whisper("Rezzing You", LANG_UNIVERSAL, tPlayer);
                     return;
                 }
             }

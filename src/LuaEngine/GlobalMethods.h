@@ -9,25 +9,49 @@
 
 namespace LuaGlobalFunctions
 {
-    /* GETTERS */
+    /**
+     * Returns lua engine name. Currently `ElunaEngine`
+     *
+     * @return string engineName
+     */
     int GetLuaEngine(lua_State* L)
     {
         Eluna::Push(L, "ElunaEngine");
         return 1;
     }
 
+    /**
+     * Returns emulator / core name.
+     * For example `MaNGOS`, `cMaNGOS` or `TrinityCore`
+     *
+     * @return string coreName
+     */
     int GetCoreName(lua_State* L)
     {
         Eluna::Push(L, CORE_NAME);
         return 1;
     }
 
+    /**
+     * Returns emulator version
+     *
+     * * For TrinityCore returns for example `2014-08-13 17:27:22 +0300`
+     * * For cMaNGOS returns for example `12708`
+     * * For MaNGOS returns for example `20002`
+     *
+     * @return string version
+     */
     int GetCoreVersion(lua_State* L)
     {
         Eluna::Push(L, CORE_VERSION);
         return 1;
     }
 
+    /**
+     * Returns emulator expansion. Expansion is 0 for classic, 1 for TBC, 2 for WOTLK and 3 for cataclysm
+     *
+     * @return int32 version : emulator expansion ID
+     */
     int GetCoreExpansion(lua_State* L)
     {
 #ifdef CLASSIC
@@ -42,6 +66,12 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Returns [Quest] template
+     *
+     * @param uint32 questId : [Quest] entry ID
+     * @return [Quest] quest
+     */
     int GetQuest(lua_State* L)
     {
         uint32 questId = Eluna::CHECKVAL<uint32>(L, 1);
@@ -50,6 +80,12 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Finds and Returns [Player] by guid if found
+     *
+     * @param uint64 guid : guid of the [Player]
+     * @return [Player] player
+     */
     int GetPlayerByGUID(lua_State* L)
     {
         uint64 guid = Eluna::CHECKVAL<uint64>(L, 1);
@@ -57,13 +93,24 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Finds and Returns [Player] by name if found
+     *
+     * @param string name : name of the [Player]
+     * @return [Player] player
+     */
     int GetPlayerByName(lua_State* L)
     {
-        const char* message = Eluna::CHECKVAL<const char*>(L, 1);
-        Eluna::Push(L, eObjectAccessor->FindPlayerByName(message));
+        const char* name = Eluna::CHECKVAL<const char*>(L, 1);
+        Eluna::Push(L, eObjectAccessor->FindPlayerByName(name));
         return 1;
     }
 
+    /**
+     * Returns game time in seconds
+     *
+     * @return uint32 time
+     */
     int GetGameTime(lua_State* L)
     {
         time_t time = eWorld->GetGameTime();
@@ -74,6 +121,22 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Returns a table with all the current [Player]s in the world
+     *
+     * <pre>
+     * enum TeamId
+     * {
+     *     TEAM_ALLIANCE = 0,
+     *     TEAM_HORDE = 1,
+     *     TEAM_NEUTRAL = 2
+     * };
+     * </pre>
+     *
+     * @param [TeamId] team = TEAM_NEUTRAL : optional check team of the [Player], Alliance, Horde or Neutral (All)
+     * @param bool onlyGM = false : optional check if GM only
+     * @return table worldPlayers
+     */
     int GetPlayersInWorld(lua_State* L)
     {
         uint32 team = Eluna::CHECKVAL<uint32>(L, 1, TEAM_NEUTRAL);
@@ -89,9 +152,9 @@ namespace LuaGlobalFunctions
             if (Player* player = it->second->GetPlayer())
             {
 #ifndef TRINITY
-                if (player->GetSession() && ((team >= TEAM_NEUTRAL || player->GetTeamId() == team) && (!onlyGM || player->isGameMaster())))
+                if ((team == TEAM_NEUTRAL || player->GetTeamId() == team) && (!onlyGM || player->isGameMaster()))
 #else
-                if (player->GetSession() && ((team >= TEAM_NEUTRAL || player->GetTeamId() == team) && (!onlyGM || player->IsGameMaster())))
+                if ((team == TEAM_NEUTRAL || player->GetTeamId() == team) && (!onlyGM || player->IsGameMaster()))
 #endif
                 {
                     ++i;
@@ -106,6 +169,23 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Returns a table with all the current [Player]s in a map
+     *
+     * <pre>
+     * enum TeamId
+     * {
+     *     TEAM_ALLIANCE = 0,
+     *     TEAM_HORDE = 1,
+     *     TEAM_NEUTRAL = 2
+     * };
+     * </pre>
+     *
+     * @param uint32 mapId : the [Map] entry ID
+     * @param uint32 instanceId : the instance ID to search in the map
+     * @param [TeamId] team : optional check team of the [Player], Alliance, Horde or Neutral (All)
+     * @return table mapPlayers
+     */
     int GetPlayersInMap(lua_State* L)
     {
         uint32 mapID = Eluna::CHECKVAL<uint32>(L, 1);
@@ -143,6 +223,12 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Returns [Guild] by name
+     *
+     * @param string name : the name of a guild
+     * @return [Guild] guild
+     */
     int GetGuildByName(lua_State* L)
     {
         const char* name = Eluna::CHECKVAL<const char*>(L, 1);
@@ -150,6 +236,13 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Returns [Map] by ID
+     *
+     * @param uint32 mapId : the [Map] ID
+     * @param uint32 instanceId : instance ID to search, use 0 if not instance
+     * @return [Map] map
+     */
     int GetMapById(lua_State* L)
     {
         uint32 mapid = Eluna::CHECKVAL<uint32>(L, 1);
@@ -159,6 +252,12 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Returns [Guild] by the leader's GUID
+     *
+     * @param uint64 guid : the guid of a [Guild] leader
+     * @return [Guild] guild
+     */
     int GetGuildByLeaderGUID(lua_State* L)
     {
         uint64 guid = Eluna::CHECKVAL<uint64>(L, 1);
@@ -167,12 +266,25 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Returns the amount of [Player]s in the world
+     *
+     * @return uint32 count
+     */
     int GetPlayerCount(lua_State* L)
     {
         Eluna::Push(L, eWorld->GetActiveSessionCount());
         return 1;
     }
 
+    /**
+     * Returns a [Player]'s GUID
+     * [Player] GUID consist of low GUID and type ID
+     * [Player] and [Creature] for example can have the same low GUID but not GUID.
+     *
+     * @param uint32 lowguid : low GUID of the [Player]
+     * @return uint64 guid
+     */
     int GetPlayerGUID(lua_State* L)
     {
         uint32 lowguid = Eluna::CHECKVAL<uint32>(L, 1);
@@ -180,6 +292,14 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Returns an [Item]'s GUID
+     * [Item] GUID consist of low GUID and type ID
+     * [Player] and [Item] for example can have the same low GUID but not GUID.
+     *
+     * @param uint32 lowguid : low GUID of the [Item]
+     * @return uint64 guid
+     */
     int GetItemGUID(lua_State* L)
     {
         uint32 lowguid = Eluna::CHECKVAL<uint32>(L, 1);
@@ -187,6 +307,15 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Returns a [GameObject]'s GUID
+     * [GameObject] GUID consist of entry ID, low GUID and type ID
+     * [Player] and [GameObject] for example can have the same low GUID but not GUID.
+     *
+     * @param uint32 lowguid : low GUID of the [GameObject]
+     * @param uint32 entry : entry ID of the [GameObject]
+     * @return uint64 guid
+     */
     int GetObjectGUID(lua_State* L)
     {
         uint32 lowguid = Eluna::CHECKVAL<uint32>(L, 1);
@@ -195,6 +324,15 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Returns a [Creature]'s GUID.
+     * [Creature] GUID consist of entry ID, low GUID and type ID
+     * [Player] and [Creature] for example can have the same low GUID but not GUID.
+     *
+     * @param uint32 lowguid : low GUID of the [Creature]
+     * @param uint32 entry : entry ID of the [Creature]
+     * @return uint64 guid
+     */
     int GetUnitGUID(lua_State* L)
     {
         uint32 lowguid = Eluna::CHECKVAL<uint32>(L, 1);
@@ -203,6 +341,15 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Returns the low GUID from a GUID.
+     * Low GUID is an ID to distinct the objects of the same type.
+     * [Player] and [Creature] for example can have the same low GUID but not GUID.
+     * GUID consist of entry ID, low GUID and type ID
+     *
+     * @param uint64 guid : GUID of an [Object]
+     * @return uint32 lowguid : low GUID of the [Object]
+     */
     int GetGUIDLow(lua_State* L)
     {
         uint64 guid = Eluna::CHECKVAL<uint64>(L, 1);
@@ -211,19 +358,30 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Returns an [Item]'s chat link
+     *
+     * <pre>
+     * enum Locales
+     * {
+     *     LOCALE_enUS = 0,
+     *     LOCALE_koKR = 1,
+     *     LOCALE_frFR = 2,
+     *     LOCALE_deDE = 3,
+     *     LOCALE_zhCN = 4,
+     *     LOCALE_zhTW = 5,
+     *     LOCALE_esES = 6,
+     *     LOCALE_esMX = 7,
+     *     LOCALE_ruRU = 8
+     * };
+     * </pre>
+     *
+     * @param uint32 entry : entry ID of the [Item]
+     * @param int32 loc_idx = 0 : locale index, default is enUS
+     * @return string itemLink
+     */
     int GetItemLink(lua_State* L)
     {
-        /*
-        LOCALE_enUS = 0,
-        LOCALE_koKR = 1,
-        LOCALE_frFR = 2,
-        LOCALE_deDE = 3,
-        LOCALE_zhCN = 4,
-        LOCALE_zhTW = 5,
-        LOCALE_esES = 6,
-        LOCALE_esMX = 7,
-        LOCALE_ruRU = 8
-        */
         uint32 entry = Eluna::CHECKVAL<uint32>(L, 1);
         int loc_idx = Eluna::CHECKVAL<int>(L, 2, DEFAULT_LOCALE);
         if (loc_idx < 0 || loc_idx >= MAX_LOCALES)
@@ -249,6 +407,14 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Returns the type ID from a GUID.
+     * Type ID is different for each type ([Player], [Creature], [GameObject]...)
+     * GUID consist of entry ID, low GUID and type ID
+     *
+     * @param uint64 guid : GUID of an [Object]
+     * @return uint32 typeId : type ID of the [Object]
+     */
     int GetGUIDType(lua_State* L)
     {
         uint64 guid = Eluna::CHECKVAL<uint64>(L, 1);
@@ -256,6 +422,15 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Returns the entry ID from a GUID.
+     * Entry ID is different for each [Creature] and [GameObject].
+     * [Item] GUIDs dont include the entry
+     * GUID consist of entry ID, low GUID and type ID
+     *
+     * @param uint64 guid : GUID of an [Creature] or [GameObject], otherwise returns 0
+     * @return uint32 entry : entry ID of the [Creature] or [GameObject]
+     */
     int GetGUIDEntry(lua_State* L)
     {
         uint64 guid = Eluna::CHECKVAL<uint64>(L, 1);
@@ -263,6 +438,13 @@ namespace LuaGlobalFunctions
         return 1;
     }
 
+    /**
+     * Returns the area's or zone's name
+     *
+     * @param uint32 areaOrZoneId : area ID or zone ID
+     * @param uint32 locale_idx = 0 : locale to return the name in
+     * @return string areaOrZoneName
+     */
     int GetAreaName(lua_State* L)
     {
         uint32 areaOrZoneId = Eluna::CHECKVAL<uint32>(L, 1);
@@ -419,6 +601,17 @@ namespace LuaGlobalFunctions
         return 0;
     }
 
+    int RegisterBGEvent(lua_State* L)
+    {
+        uint32 ev = Eluna::CHECKVAL<uint32>(L, 1);
+        luaL_checktype(L, 2, LUA_TFUNCTION);
+        lua_pushvalue(L, 2);
+        int functionRef = luaL_ref(L, LUA_REGISTRYINDEX);
+        if (functionRef > 0)
+            sEluna->Register(HookMgr::REGTYPE_BG, 0, ev, functionRef);
+        return 0;
+    }
+
     int ReloadEluna(lua_State* /*L*/)
     {
         Eluna::reload = true;
@@ -436,19 +629,20 @@ namespace LuaGlobalFunctions
     {
         const char* query = Eluna::CHECKVAL<const char*>(L, 1);
 
-        QueryResult* result = NULL;
-#ifndef TRINITY
-        result = WorldDatabase.Query(query);
+#ifdef TRINITY
+		ElunaQuery result = WorldDatabase.Query(query);
+		if (result)
+			Eluna::Push(L, new ElunaQuery(result));
+		else
+			Eluna::Push(L);
 #else
-        QueryResult res = WorldDatabase.Query(query);
-        if (res)
-            result = new QueryResult(res);
+		ElunaQuery* result = WorldDatabase.QueryNamed(query);
+		if (result)
+			Eluna::Push(L, result);
+		else
+			Eluna::Push(L);
 #endif
-        if (result)
-            Eluna::Push(L, result);
-        else
-            Eluna::Push(L);
-        return 1;
+		return 1;
     }
 
     int WorldDBExecute(lua_State* L)
@@ -462,19 +656,20 @@ namespace LuaGlobalFunctions
     {
         const char* query = Eluna::CHECKVAL<const char*>(L, 1);
 
-        QueryResult* result = NULL;
-#ifndef TRINITY
-        result = CharacterDatabase.Query(query);
+#ifdef TRINITY
+		QueryResult result = CharacterDatabase.Query(query);
+		if (result)
+			Eluna::Push(L, new QueryResult(result));
+		else
+			Eluna::Push(L);
 #else
-        QueryResult res = CharacterDatabase.Query(query);
-        if (res)
-            result = new QueryResult(res);
+		QueryNamedResult* result = CharacterDatabase.QueryNamed(query);
+		if (result)
+			Eluna::Push(L, result);
+		else
+			Eluna::Push(L);
 #endif
-        if (result)
-            Eluna::Push(L, result);
-        else
-            Eluna::Push(L);
-        return 1;
+		return 1;
     }
 
     int CharDBExecute(lua_State* L)
@@ -486,20 +681,21 @@ namespace LuaGlobalFunctions
 
     int AuthDBQuery(lua_State* L)
     {
-        const char* query = Eluna::CHECKVAL<const char*>(L, 1);
+		const char* query = Eluna::CHECKVAL<const char*>(L, 1);
 
-        QueryResult* result = NULL;
-#ifndef TRINITY
-        result = LoginDatabase.Query(query);
+#ifdef TRINITY
+		QueryResult result = LoginDatabase.Query(query);
+		if (result)
+			Eluna::Push(L, new QueryResult(result));
+		else
+			Eluna::Push(L);
 #else
-        QueryResult res = LoginDatabase.Query(query);
-        if (res)
-            result = new QueryResult(res);
+		QueryNamedResult* result = LoginDatabase.QueryNamed(query);
+		if (result)
+			Eluna::Push(L, result);
+		else
+			Eluna::Push(L);
 #endif
-        if (result)
-            Eluna::Push(L, result);
-        else
-            Eluna::Push(L);
         return 1;
     }
 
@@ -510,6 +706,16 @@ namespace LuaGlobalFunctions
         return 0;
     }
 
+    /**
+     * Registers a global timed event
+     * When the passed function is called, the parameters `(eventId, delay, repeats)` are passed to it.
+     * Repeats will decrease on each call if the event does not repeat indefinitely
+     *
+     * @param function function : function to trigger when the time has passed
+     * @param uint32 delay : set time in milliseconds for the event to trigger
+     * @param uint32 repeats : how many times for the event to repeat, 0 is infinite
+     * @return int eventId : unique ID for the timed event used to cancel it or nil
+     */
     int CreateLuaEvent(lua_State* L)
     {
         luaL_checktype(L, 1, LUA_TFUNCTION);
@@ -518,37 +724,66 @@ namespace LuaGlobalFunctions
 
         lua_pushvalue(L, 1);
         int functionRef = luaL_ref(L, LUA_REGISTRYINDEX);
-        functionRef = sEluna->m_EventMgr->AddEvent(&sEluna->m_EventMgr->GlobalEvents, functionRef, delay, repeats);
-        if (functionRef)
+        if (functionRef != LUA_REFNIL && functionRef != LUA_NOREF)
+        {
+            sEluna->eventMgr->globalProcessor->AddEvent(functionRef, delay, repeats);
             Eluna::Push(L, functionRef);
-        else
-            Eluna::Push(L);
+        }
         return 1;
     }
 
+    /**
+     * Removes a global timed event specified by the event ID
+     *
+     * @param int eventId : event Id to remove
+     * @param bool all_Events = false : remove from all events, not just global
+     */
     int RemoveEventById(lua_State* L)
     {
         int eventId = Eluna::CHECKVAL<int>(L, 1);
         bool all_Events = Eluna::CHECKVAL<bool>(L, 1, false);
 
+        // not thread safe
         if (all_Events)
-            sEluna->m_EventMgr->RemoveEvent(eventId);
+            sEluna->eventMgr->RemoveEvent(eventId);
         else
-            sEluna->m_EventMgr->RemoveEvent(&sEluna->m_EventMgr->GlobalEvents, eventId);
+            sEluna->eventMgr->globalProcessor->RemoveEvent(eventId);
         return 0;
     }
 
+    /**
+     * Removes all global timed events
+     *
+     * @param bool all_Events = false : remove all events, not just global
+     */
     int RemoveEvents(lua_State* L)
     {
         bool all_Events = Eluna::CHECKVAL<bool>(L, 1, false);
 
+        // not thread safe
         if (all_Events)
-            sEluna->m_EventMgr->RemoveEvents();
+            sEluna->eventMgr->RemoveEvents();
         else
-            sEluna->m_EventMgr->GlobalEvents.KillAllEvents(true);
+            sEluna->eventMgr->globalProcessor->RemoveEvents();
         return 0;
     }
 
+    /**
+     * Performs an ingame spawn and returns [Creature] or [GameObject] dependent on spawnType
+     *
+     * @param int32 spawnType : type of object to spawn, 1 = [Creature], 2 = [GameObject]
+     * @param uint32 entry : entry ID of the [Creature] or [GameObject]
+     * @param uint32 mapId : map ID to spawn the [Creature] or [GameObject] in
+     * @param uint32 instanceId : instance ID to put the [Creature] or [GameObject] in. Non instance is 0
+     * @param float x : x coordinate of the [Creature] or [GameObject]
+     * @param float y : y coordinate of the [Creature] or [GameObject]
+     * @param float z : z coordinate of the [Creature] or [GameObject]
+     * @param float o : o facing/orientation of the [Creature] or [GameObject]
+     * @param bool save = false : optional to save the [Creature] or [GameObject] to the database
+     * @param uint32 durorresptime = 0 : despawn time of the [Creature] if it's not saved or respawn time of [GameObject]
+     * @param uint32 phase = 1 : phase to put the [Creature] or [GameObject] in
+     * @return [WorldObject] worldObject : returns [Creature] or [GameObject]
+     */
     int PerformIngameSpawn(lua_State* L)
     {
         int spawntype = Eluna::CHECKVAL<int>(L, 1);
@@ -948,48 +1183,35 @@ namespace LuaGlobalFunctions
     int Ban(lua_State* L)
     {
         int banMode = Eluna::CHECKVAL<int>(L, 1);
-        const char* nameOrIP_cstr = Eluna::CHECKVAL<const char*>(L, 2);
+        std::string nameOrIP = Eluna::CHECKVAL<std::string>(L, 2);
         uint32 duration = Eluna::CHECKVAL<uint32>(L, 3);
-        const char* reason = Eluna::CHECKVAL<const char*>(L, 4);
-        Player* whoBanned = Eluna::CHECKOBJ<Player>(L, 5);
-        std::string nameOrIP(nameOrIP_cstr);
+        const char* reason = Eluna::CHECKVAL<const char*>(L, 4, "");
+        const char* whoBanned = Eluna::CHECKVAL<const char*>(L, 5, "");
 
         switch (banMode)
         {
-        case BAN_ACCOUNT:
+            case BAN_ACCOUNT:
 #ifdef CATA
-            if (!Utf8ToUpperOnlyLatin(nameOrIP))
-                return 0;
+                if (!Utf8ToUpperOnlyLatin(nameOrIP))
+                    return 0;
 #else
-            if (!AccountMgr::normalizeString(nameOrIP))
-                return 0;
+                if (!AccountMgr::normalizeString(nameOrIP))
+                    return 0;
 #endif
-            break;
-        case BAN_CHARACTER:
-            if (!normalizePlayerName(nameOrIP))
+                break;
+            case BAN_CHARACTER:
+                if (!normalizePlayerName(nameOrIP))
+                    return 0;
+                break;
+            case BAN_IP:
+                if (!IsIPAddress(nameOrIP.c_str()))
+                    return 0;
+                break;
+            default:
                 return 0;
-            break;
-        case BAN_IP:
-            if (!IsIPAddress(nameOrIP.c_str()))
-                return 0;
-            break;
-        default:
-            return 0;
         }
 
-        switch (eWorld->BanAccount((BanMode)banMode, nameOrIP, duration, reason, whoBanned->GetSession() ? whoBanned->GetName() : ""))
-        {
-        case BAN_SUCCESS:
-            if (duration > 0)
-                ChatHandler(whoBanned->GetSession()).PSendSysMessage(LANG_BAN_YOUBANNED, nameOrIP.c_str(), secsToTimeString(duration, true).c_str(), reason);
-            else
-                ChatHandler(whoBanned->GetSession()).PSendSysMessage(LANG_BAN_YOUPERMBANNED, nameOrIP.c_str(), reason);
-            break;
-        case BAN_SYNTAX_ERROR:
-            return 0;
-        case BAN_NOTFOUND:
-            return 0;
-        }
+        eWorld->BanAccount((BanMode)banMode, nameOrIP, duration, reason, whoBanned);
         return 0;
     }
 
@@ -1008,10 +1230,24 @@ namespace LuaGlobalFunctions
         uint32 senderGUIDLow = Eluna::CHECKVAL<uint32>(L, ++i, 0);
         uint32 stationary = Eluna::CHECKVAL<uint32>(L, ++i, MAIL_STATIONERY_DEFAULT);
         uint32 delay = Eluna::CHECKVAL<uint32>(L, ++i, 0);
+        uint32 money = Eluna::CHECKVAL<uint32>(L, ++i, 0);
+        uint32 cod = Eluna::CHECKVAL<uint32>(L, ++i, 0);
         int argAmount = lua_gettop(L);
 
         MailSender sender(MAIL_NORMAL, senderGUIDLow, (MailStationery)stationary);
         MailDraft draft(subject, text);
+
+#ifdef TRINITY
+        if (cod)
+            draft.AddCOD(cod);
+        if (money)
+            draft.AddMoney(money);
+#else
+        if (cod)
+            draft.SetCOD(cod);
+        if (money)
+            draft.SetMoney(money);
+#endif
 
 #ifdef TRINITY
         SQLTransaction trans = CharacterDatabase.BeginTransaction();
@@ -1019,8 +1255,8 @@ namespace LuaGlobalFunctions
         uint8 addedItems = 0;
         while (addedItems <= MAX_MAIL_ITEMS && i + 2 <= argAmount)
         {
-            uint32 entry = luaL_checkunsigned(L, ++i);
-            uint32 amount = luaL_checkunsigned(L, ++i);
+            uint32 entry = Eluna::CHECKVAL<uint32>(L, ++i);
+            uint32 amount = Eluna::CHECKVAL<uint32>(L, ++i);
 
 #ifndef TRINITY
             ItemTemplate const* item_proto = ObjectMgr::GetItemPrototype(entry);
@@ -1043,7 +1279,6 @@ namespace LuaGlobalFunctions
                 item->SaveToDB();
 #else
                 item->SaveToDB(trans);
-                SQLTransaction trans = CharacterDatabase.BeginTransaction();
 #endif
                 draft.AddItem(item);
                 ++addedItems;

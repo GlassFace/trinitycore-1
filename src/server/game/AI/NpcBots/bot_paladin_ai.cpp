@@ -264,7 +264,7 @@ public:
             {
                 if (doCast(target, GetSpell(HAND_OF_PROTECTION_1)))
                 {
-                    me->MonsterWhisper("BOP on you!", target->ToPlayer());
+					me->Whisper("BOP on you!", LANG_UNIVERSAL, target->ToPlayer());
                     SetSpellCooldown(HAND_OF_PROTECTION_1, 60000); //1 min
 
                     //debug
@@ -288,7 +288,7 @@ public:
                         {
                             if (doCast(target, GetSpell(LAY_ON_HANDS_1)))
                             {
-                                me->MonsterWhisper("Lay of Hands on you!", target->ToPlayer());
+								me->Whisper("Lay of Hands on you!", LANG_UNIVERSAL, target->ToPlayer());
                                 SetSpellCooldown(LAY_ON_HANDS_1, 150000); //2.5 min
                                 return true;
                             }
@@ -608,7 +608,7 @@ public:
                     me->Relocate(*target);
 
                 if (doCast(target, GetSpell(REBIRTH_1))) //rezzing
-					me->MonsterWhisper("Rezzing You", master);
+					me->Whisper("Rezzing You", LANG_UNIVERSAL, master);
 
                 return;
             }
@@ -633,7 +633,7 @@ public:
 
                 if (doCast(target, GetSpell(REBIRTH_1))) //rezzing
                 {
-					me->MonsterWhisper("Rezzing You", tPlayer);
+					me->Whisper("Rezzing You", LANG_UNIVERSAL, tPlayer);
                     return;
                 }
             }

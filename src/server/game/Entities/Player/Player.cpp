@@ -80,7 +80,9 @@
 #include "WorldPacket.h"
 #include "WorldSession.h"
 #include "GameObjectAI.h"
+#ifdef ELUNA
 #include "LuaEngine.h"
+#endif
 #include "../../../scripts/Custom/Transmogrification.h"
 //Bot
 #include "Config.h"
