@@ -57,9 +57,6 @@
 
 #include "Transport.h"
 
-// npcbot
-#include "bot_ai.h"
-
 TrainerSpell const* TrainerSpellData::Find(uint32 spell_id) const
 {
     TrainerSpellMap::const_iterator itr = spellList.find(spell_id);
@@ -149,7 +146,7 @@ bool ForcedDespawnDelayEvent::Execute(uint64 /*e_time*/, uint32 /*p_time*/)
 
 Creature::Creature(bool isWorldObject): Unit(isWorldObject), MapObject(),
 m_groupLootTimer(0), lootingGroupLowGUID(0), m_PlayerDamageReq(0),
-m_lootRecipient(0), m_lootRecipientGroup(0), _skinner(0), _pickpocketLootRestore(0), m_corpseRemoveTime(0), m_respawnTime(0),
+m_lootRecipient(), m_lootRecipientGroup(0), _skinner(), _pickpocketLootRestore(0), m_corpseRemoveTime(0), m_respawnTime(0),
 m_respawnDelay(300), m_corpseDelay(60), m_respawnradius(0.0f), m_reactState(REACT_AGGRESSIVE),
 m_defaultMovementType(IDLE_MOTION_TYPE), m_DBTableGuid(0), m_equipmentId(0), m_originalEquipmentId(0), m_AlreadyCallAssistance(false),
 m_AlreadySearchedAssistance(false), m_regenHealth(true), m_AI_locked(false), m_meleeDamageSchoolMask(SPELL_SCHOOL_MASK_NORMAL),
@@ -172,15 +169,6 @@ m_originalEntry(0), m_homePosition(), m_transportHomePosition(), m_creatureInfo(
     TriggerJustRespawned = false;
     m_isTempWorldObject = false;
     _focusSpell = NULL;
-
-    //bot
-    m_bot_owner = NULL;
-    m_creature_owner = NULL;
-    m_bots_pet = NULL;
-    m_bot_class = CLASS_NONE;
-    bot_AI = NULL;
-    m_canUpdate = true;
-    //end bot
 }
 
 Creature::~Creature()
@@ -258,8 +246,6 @@ void Creature::SearchFormation()
 void Creature::RemoveCorpse(bool setSpawnTime)
 {
     if (getDeathState() != CORPSE)
-        return;
-    if (bot_AI)
         return;
 
     m_corpseRemoveTime = time(NULL);
@@ -468,11 +454,6 @@ bool Creature::UpdateEntry(uint32 entry, CreatureData const* data /*= nullptr*/)
 
 void Creature::Update(uint32 diff)
 {
-    //npcbot: update helper
-    if (!m_canUpdate && bot_AI)
-        return;
-    //end npcbot
-
     if (IsAIEnabled && TriggerJustRespawned)
     {
         TriggerJustRespawned = false;
@@ -502,17 +483,17 @@ void Creature::Update(uint32 diff)
                 if (!allowed)                                               // Will be rechecked on next Update call
                     break;
 
-                uint64 dbtableHighGuid = MAKE_NEW_GUID(m_DBTableGuid, GetEntry(), HIGHGUID_UNIT);
+                ObjectGuid dbtableHighGuid(HIGHGUID_UNIT, GetEntry(), m_DBTableGuid);
                 time_t linkedRespawntime = GetMap()->GetLinkedRespawnTime(dbtableHighGuid);
                 if (!linkedRespawntime)             // Can respawn
                     Respawn();
                 else                                // the master is dead
                 {
-                    uint64 targetGuid = sObjectMgr->GetLinkedRespawnGuid(dbtableHighGuid);
+                    ObjectGuid targetGuid = sObjectMgr->GetLinkedRespawnGuid(dbtableHighGuid);
                     if (targetGuid == dbtableHighGuid) // if linking self, never respawn (check delayed to next day)
                         SetRespawnTime(DAY);
                     else
-                        m_respawnTime = (now > linkedRespawntime ? now : linkedRespawntime)+urand(5, MINUTE); // else copy time from master and add a little
+                        m_respawnTime = (now > linkedRespawntime ? now : linkedRespawntime) + urand(5, MINUTE); // else copy time from master and add a little
                     SaveRespawnTime(); // also save to DB immediately
                 }
             }
@@ -563,7 +544,7 @@ void Creature::Update(uint32 diff)
                     if (Unit* charmer = ObjectAccessor::GetUnit(*this, LastCharmerGUID))
                         i_AI->AttackStart(charmer);
 
-                LastCharmerGUID = 0;
+                LastCharmerGUID.Clear();
             }
 
             if (!IsInEvadeMode() && IsAIEnabled)
@@ -903,7 +884,7 @@ Player* Creature::GetLootRecipient() const
 {
     if (!m_lootRecipient)
         return NULL;
-    return ObjectAccessor::FindPlayer(m_lootRecipient);
+    return ObjectAccessor::FindConnectedPlayer(m_lootRecipient);
 }
 
 Group* Creature::GetLootRecipientGroup() const
@@ -921,7 +902,7 @@ void Creature::SetLootRecipient(Unit* unit)
 
     if (!unit)
     {
-        m_lootRecipient = 0;
+        m_lootRecipient.Clear();
         m_lootRecipientGroup = 0;
         RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE|UNIT_DYNFLAG_TAPPED);
         return;
@@ -1243,7 +1224,7 @@ bool Creature::LoadCreatureFromDB(uint32 guid, Map* map, bool addToMap)
     m_DBTableGuid = guid;
     if (map->GetInstanceId() == 0)
     {
-        if (map->GetCreature(MAKE_NEW_GUID(guid, data->id, HIGHGUID_UNIT)))
+        if (map->GetCreature(ObjectGuid(HIGHGUID_UNIT, data->id, guid)))
             return false;
     }
     else
@@ -1311,11 +1292,6 @@ void Creature::SetCanDualWield(bool value)
 
 void Creature::LoadEquipment(int8 id, bool force /*= true*/)
 {
-    //npcbot: prevent loading equipment for bots
-    if (GetEntry() >= BOT_ENTRY_BEGIN && GetEntry() <= BOT_ENTRY_END) //temp hack
-        return;
-    //end npcbot
-
     if (id == 0)
     {
         if (force)
@@ -1498,7 +1474,7 @@ void Creature::setDeathState(DeathState s)
         if (sWorld->getBoolConfig(CONFIG_SAVE_RESPAWN_TIME_IMMEDIATELY) || isWorldBoss())
             SaveRespawnTime();
 
-        SetTarget(0);                // remove target selection in any cases (can be set at aura remove in Unit::setDeathState)
+        SetTarget(ObjectGuid::Empty);                // remove target selection in any cases (can be set at aura remove in Unit::setDeathState)
         SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
         setActive(false);
@@ -1559,8 +1535,8 @@ void Creature::Respawn(bool force)
         if (m_DBTableGuid)
             GetMap()->RemoveCreatureRespawnTime(m_DBTableGuid);
 
-        TC_LOG_DEBUG("entities.unit", "Respawning creature %s (GuidLow: %u, Full GUID: " UI64FMTD " Entry: %u)",
-            GetName().c_str(), GetGUIDLow(), GetGUID(), GetEntry());
+        TC_LOG_DEBUG("entities.unit", "Respawning creature %s (%s)",
+            GetName().c_str(), GetGUID().ToString().c_str());
         m_respawnTime = 0;
         ResetPickPocketRefillTimer();
         loot.clear();
@@ -2173,9 +2149,6 @@ void Creature::SetInCombatWithZone()
 
 uint32 Creature::GetShieldBlockValue() const                  //dunno mob block value
 {
-    if (bot_AI)
-        return bot_AI->GetShieldBlockValue();
-
     return (getLevel()/2 + uint32(GetStat(STAT_STRENGTH)/20));
 }
 
@@ -2453,16 +2426,6 @@ std::string const & Creature::GetNameForLocaleIdx(LocaleConstant loc_idx) const
     return GetName();
 }
 
-//Do not if this works or not, moving creature to another map is very dangerous
-void Creature::FarTeleportTo(Map* map, float X, float Y, float Z, float O)
-{
-    CleanupBeforeRemoveFromMap(false);
-    GetMap()->RemoveFromMap(this, false);
-    Relocate(X, Y, Z, O);
-    SetMap(map);
-    GetMap()->AddToMap(this);
-}
-
 uint32 Creature::GetPetAutoSpellOnPos(uint8 pos) const
 {
     if (pos >= MAX_SPELL_CHARM || m_charmInfo->GetCharmSpell(pos)->GetType() != ACT_ENABLED)
@@ -2497,7 +2460,7 @@ bool Creature::SetWalk(bool enable)
         return false;
 
     WorldPacket data(enable ? SMSG_SPLINE_MOVE_SET_WALK_MODE : SMSG_SPLINE_MOVE_SET_RUN_MODE, 9);
-    data.append(GetPackGUID());
+    data << GetPackGUID();
     SendMessageToSet(&data, false);
     return true;
 }
@@ -2513,7 +2476,7 @@ bool Creature::SetDisableGravity(bool disable, bool packetOnly/*=false*/)
         return true;
 
     WorldPacket data(disable ? SMSG_SPLINE_MOVE_GRAVITY_DISABLE : SMSG_SPLINE_MOVE_GRAVITY_ENABLE, 9);
-    data.append(GetPackGUID());
+    data << GetPackGUID();
     SendMessageToSet(&data, false);
     return true;
 }
@@ -2527,7 +2490,7 @@ bool Creature::SetSwim(bool enable)
         return true;
 
     WorldPacket data(enable ? SMSG_SPLINE_MOVE_START_SWIM : SMSG_SPLINE_MOVE_STOP_SWIM);
-    data.append(GetPackGUID());
+    data << GetPackGUID();
     SendMessageToSet(&data, true);
     return true;
 }
@@ -2541,7 +2504,7 @@ bool Creature::SetCanFly(bool enable)
         return true;
 
     WorldPacket data(enable ? SMSG_SPLINE_MOVE_SET_FLYING : SMSG_SPLINE_MOVE_UNSET_FLYING, 9);
-    data.append(GetPackGUID());
+    data << GetPackGUID();
     SendMessageToSet(&data, false);
     return true;
 }
@@ -2555,7 +2518,7 @@ bool Creature::SetWaterWalking(bool enable, bool packetOnly /* = false */)
         return true;
 
     WorldPacket data(enable ? SMSG_SPLINE_MOVE_WATER_WALK : SMSG_SPLINE_MOVE_LAND_WALK);
-    data.append(GetPackGUID());
+    data << GetPackGUID();
     SendMessageToSet(&data, true);
     return true;
 }
@@ -2569,7 +2532,7 @@ bool Creature::SetFeatherFall(bool enable, bool packetOnly /* = false */)
         return true;
 
     WorldPacket data(enable ? SMSG_SPLINE_MOVE_FEATHER_FALL : SMSG_SPLINE_MOVE_NORMAL_FALL);
-    data.append(GetPackGUID());
+    data << GetPackGUID();
     SendMessageToSet(&data, true);
     return true;
 }
@@ -2590,7 +2553,7 @@ bool Creature::SetHover(bool enable, bool packetOnly /*= false*/)
 
     //! Not always a packet is sent
     WorldPacket data(enable ? SMSG_SPLINE_MOVE_SET_HOVER : SMSG_SPLINE_MOVE_UNSET_HOVER, 9);
-    data.append(GetPackGUID());
+    data << GetPackGUID();
     SendMessageToSet(&data, false);
     return true;
 }
@@ -2713,10 +2676,10 @@ void Creature::SetDisplayId(uint32 modelId)
     }
 }
 
-void Creature::SetTarget(uint64 guid)
+void Creature::SetTarget(ObjectGuid guid)
 {
     if (!_focusSpell)
-        SetUInt64Value(UNIT_FIELD_TARGET, guid);
+        SetGuidValue(UNIT_FIELD_TARGET, guid);
 }
 
 void Creature::FocusTarget(Spell const* focusSpell, WorldObject const* target)
@@ -2726,7 +2689,7 @@ void Creature::FocusTarget(Spell const* focusSpell, WorldObject const* target)
         return;
 
     _focusSpell = focusSpell;
-    SetUInt64Value(UNIT_FIELD_TARGET, target->GetGUID());
+    SetGuidValue(UNIT_FIELD_TARGET, target->GetGUID());
     if (focusSpell->GetSpellInfo()->AttributesEx5 & SPELL_ATTR5_DONT_TURN_DURING_CAST)
         AddUnitState(UNIT_STATE_ROTATING);
 
@@ -2742,179 +2705,12 @@ void Creature::ReleaseFocus(Spell const* focusSpell)
 
     _focusSpell = NULL;
     if (Unit* victim = GetVictim())
-        SetUInt64Value(UNIT_FIELD_TARGET, victim->GetGUID());
+        SetGuidValue(UNIT_FIELD_TARGET, victim->GetGUID());
     else
-        SetUInt64Value(UNIT_FIELD_TARGET, 0);
+        SetGuidValue(UNIT_FIELD_TARGET, ObjectGuid::Empty);
 
     if (focusSpell->GetSpellInfo()->AttributesEx5 & SPELL_ATTR5_DONT_TURN_DURING_CAST)
         ClearUnitState(UNIT_STATE_ROTATING);
-}
-
-uint8 Creature::GetBotClass() const
-{
-    switch (m_bot_class)
-    {
-        case DRUID_BEAR_FORM:
-        case DRUID_CAT_FORM:
-        //case TRAVEL:
-        //case FLY:
-            return CLASS_DRUID;
-        default:
-            return m_bot_class;
-    }
-}
-
-void Creature::SetIAmABot(bool bot)
-{
-    if (!bot)
-    {
-        bot_AI->UnsummonAll();
-        IsAIEnabled = false;
-        bot_AI = NULL;
-        SetUInt64Value(UNIT_FIELD_CREATEDBY, 0);
-    }
-}
-
-void Creature::SetBotsPetDied()
-{
-    if (!m_bots_pet)
-        return;
-
-    m_bots_pet->SetCharmerGUID(0);
-    m_bots_pet->SetCreatureOwner(NULL);
-    //m_bots_pet->GetBotPetAI()->SetCreatureOwner(NULL);
-    m_bots_pet->SetIAmABot(false);
-    m_bot_owner->SetMinion((Minion*)m_bots_pet, false);
-    m_bots_pet->CleanupsBeforeDelete();
-    m_bots_pet->AddObjectToRemoveList();
-    m_bots_pet = NULL;
-}
-
-uint8 Creature::GetBotRoles() const
-{
-    return bot_AI ? bot_AI->GetBotRoles() : 0;
-}
-
-void Creature::SetBotCommandState(CommandStates st, bool force)
-{
-    if (bot_AI && IsAIEnabled)
-        bot_AI->SetBotCommandState(st, force);
-}
-CommandStates Creature::GetBotCommandState() const
-{
-    return bot_AI ? bot_AI->GetBotCommandState() : COMMAND_ABANDON;
-}
-//Bot damage mods
-void Creature::ApplyBotDamageMultiplierMelee(uint32& damage, CalcDamageInfo& damageinfo) const
-{
-    if (bot_AI)
-        bot_AI->ApplyBotDamageMultiplierMelee(damage, damageinfo);
-}
-void Creature::ApplyBotDamageMultiplierMelee(int32& damage, SpellNonMeleeDamage& damageinfo, SpellInfo const* spellInfo, WeaponAttackType attackType, bool& crit) const
-{
-    if (bot_AI)
-        bot_AI->ApplyBotDamageMultiplierMelee(damage, damageinfo, spellInfo, attackType, crit);
-}
-void Creature::ApplyBotDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& damageinfo, SpellInfo const* spellInfo, WeaponAttackType attackType, bool& crit) const
-{
-    if (bot_AI)
-        bot_AI->ApplyBotDamageMultiplierSpell(damage, damageinfo, spellInfo, attackType, crit);
-}
-
-void Creature::ApplyBotDamageMultiplierEffect(SpellInfo const* spellInfo, uint8 effect_index, float &value) const
-{
-    if (bot_AI)
-        bot_AI->ApplyBotDamageMultiplierEffect(spellInfo, effect_index, value);
-}
-
-bool Creature::GetIAmABot() const
-{
-    return bot_AI && bot_AI->IsMinionAI();
-}
-
-bool Creature::GetIAmABotsPet() const
-{
-    return bot_AI && bot_AI->IsPetAI();
-}
-
-bot_minion_ai* Creature::GetBotMinionAI() const
-{
-    return IsAIEnabled && bot_AI && bot_AI->IsMinionAI() ? const_cast<bot_minion_ai*>(bot_AI->GetMinionAI()) : NULL;
-}
-
-bot_pet_ai* Creature::GetBotPetAI() const
-{
-    return IsAIEnabled && bot_AI && bot_AI->IsPetAI() ? const_cast<bot_pet_ai*>(bot_AI->GetPetAI()) : NULL;
-}
-
-void Creature::InitBotAI(bool asPet)
-{
-    ASSERT(!bot_AI);
-
-    if (asPet)
-        bot_AI = (bot_pet_ai*)AI();
-    else
-        bot_AI = (bot_minion_ai*)AI();
-}
-
-void Creature::SetBotShouldUpdateStats()
-{
-    if (bot_AI)
-        bot_AI->SetShouldUpdateStats();
-}
-
-void Creature::OnBotSummon(Creature* summon)
-{
-    if (bot_AI)
-        bot_AI->OnBotSummon(summon);
-}
-
-void Creature::OnBotDespawn(Creature* summon)
-{
-    if (bot_AI)
-        bot_AI->OnBotDespawn(summon);
-}
-
-void Creature::RemoveBotItemBonuses(uint8 slot)
-{
-    if (bot_AI)
-        bot_AI->RemoveItemBonuses(slot);
-}
-void Creature::ApplyBotItemBonuses(uint8 slot)
-{
-    if (bot_AI)
-        bot_AI->ApplyItemBonuses(slot);
-}
-bool Creature::CanUseOffHand() const
-{
-    return bot_AI && bot_AI->CanUseOffHand();
-}
-bool Creature::CanUseRanged() const
-{
-    return bot_AI && bot_AI->CanUseRanged();
-}
-bool Creature::CanEquip(ItemTemplate const* item, uint8 slot) const
-{
-    return bot_AI && bot_AI->CanEquip(item, slot);
-}
-bool Creature::Unequip(uint8 slot) const
-{
-    return bot_AI && bot_AI->Unequip(slot);
-}
-bool Creature::Equip(uint32 itemId, uint8 slot) const
-{
-    return bot_AI && bot_AI->Equip(itemId, slot);
-}
-bool Creature::ResetEquipment(uint8 slot) const
-{
-    return bot_AI && bot_AI->ResetEquipment(slot);
-}
-
-bool Creature::IsQuestBot() const
-{
-    return
-        m_creatureInfo->Entry >= 71000 && m_creatureInfo->Entry < 72000 &&
-        (m_creatureInfo->unit_flags2 & UNIT_FLAG2_ALLOW_ENEMY_INTERACT);
 }
 
 void Creature::StartPickPocketRefillTimer()

@@ -27,7 +27,6 @@
 #include "Player.h"
 #include "Pet.h"
 #include "ReputationMgr.h"
-#include "revision.h"
 #include "ScriptMgr.h"
 #include "Spell.h"
 #include "SpellAuras.h"
@@ -42,11 +41,12 @@
 #include "SpellInfo.h"
 #include "WeatherMgr.h"
 #include "Battleground.h"
+#include "revision.h"
 #else
 #include "Config/Config.h"
 #include "ReactorAI.h"
 #include "revision_nr.h"
-#include "BattleGround/BattleGroundMgr.h"
+#include "BattleGroundMgr.h"
 #endif
 
 #if (!defined(TBC) && !defined(CLASSIC))

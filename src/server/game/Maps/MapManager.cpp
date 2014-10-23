@@ -36,6 +36,7 @@
 #include "Player.h"
 #include "WorldSession.h"
 #include "Opcodes.h"
+#include "AchievementMgr.h"
 
 MapManager::MapManager()
 {
@@ -270,8 +271,8 @@ bool MapManager::ExistMapAndVMap(uint32 mapid, float x, float y)
 {
     GridCoord p = Trinity::ComputeGridCoord(x, y);
 
-    int gx=63-p.x_coord;
-    int gy=63-p.y_coord;
+    int gx = (MAX_NUMBER_OF_GRIDS - 1) - p.x_coord;
+    int gy = (MAX_NUMBER_OF_GRIDS - 1) - p.y_coord;
 
     return Map::ExistMap(mapid, gx, gy) && Map::ExistVMap(mapid, gx, gy);
 }
@@ -402,4 +403,5 @@ void MapManager::FreeInstanceId(uint32 instanceId)
         SetNextInstanceId(instanceId);
 
     _instanceIds[instanceId] = false;
+    sAchievementMgr->OnInstanceDestroyed(instanceId);
 }

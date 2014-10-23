@@ -9,13 +9,13 @@
 
 #include "Common.h"
 #include "SharedDefines.h"
+#include "ObjectGuid.h"
 #ifdef TRINITY
 #include "QueryResult.h"
 #ifdef CATA
 #include "Object.h"
 #endif
 #else
-#include "ObjectGuid.h"
 #include "Database/QueryResult.h"
 #endif
 
@@ -32,19 +32,12 @@
 
 #ifdef TRINITY
 typedef QueryResult ElunaQuery;
-#ifndef CATA
-typedef uint64 ObjectGuid;
-#endif
 #define ELUNA_LOG_INFO(...)     TC_LOG_INFO("eluna", __VA_ARGS__);
 #define ELUNA_LOG_ERROR(...)    TC_LOG_ERROR("eluna", __VA_ARGS__);
 #define ELUNA_LOG_DEBUG(...)    TC_LOG_DEBUG("eluna", __VA_ARGS__);
 #define GET_GUID                GetGUID
 #else
 typedef QueryNamedResult ElunaQuery;
-#define MAKE_NEW_GUID(l, e, h)  ObjectGuid(h, e, l)
-#define GUID_ENPART(guid)       ObjectGuid(guid).GetEntry()
-#define GUID_LOPART(guid)       ObjectGuid(guid).GetCounter()
-#define GUID_HIPART(guid)       ObjectGuid(guid).GetHigh()
 #define ASSERT                  MANGOS_ASSERT
 #define ELUNA_LOG_INFO(...)     sLog.outString(__VA_ARGS__);
 #define ELUNA_LOG_ERROR(...)    sLog.outErrorEluna(__VA_ARGS__);
@@ -62,6 +55,19 @@ typedef QueryNamedResult ElunaQuery;
 #ifndef UNORDERED_SET
 #include <unordered_set>
 #define UNORDERED_SET std::unordered_set
+#endif
+
+#ifndef MAKE_NEW_GUID
+#define MAKE_NEW_GUID(l, e, h)  ObjectGuid(h, e, l)
+#endif
+#ifndef GUID_ENPART
+#define GUID_ENPART(guid)       ObjectGuid(guid).GetEntry()
+#endif
+#ifndef GUID_LOPART
+#define GUID_LOPART(guid)       ObjectGuid(guid).GetCounter()
+#endif
+#ifndef GUID_HIPART
+#define GUID_HIPART(guid)       ObjectGuid(guid).GetHigh()
 #endif
 
 class Unit;
@@ -108,8 +114,6 @@ namespace ElunaUtil
         uint16 i_typeMask;
         uint32 i_entry;
         uint32 i_hostile;
-
-        WorldObjectInRangeCheck(WorldObjectInRangeCheck const&);
     };
 
     /*
@@ -118,7 +122,7 @@ namespace ElunaUtil
      * ReadGuard lock(_lock);
      * or
      * WriteGuard lock(_lock);
-     * 
+     *
      * The lock is automatically released at end of scope
      */
     class RWLockable

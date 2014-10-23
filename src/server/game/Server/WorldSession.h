@@ -97,10 +97,18 @@ struct AccountData
 
 enum PartyOperation
 {
-    PARTY_OP_INVITE = 0,
+    PARTY_OP_INVITE   = 0,
     PARTY_OP_UNINVITE = 1,
-    PARTY_OP_LEAVE = 2,
-    PARTY_OP_SWAP = 4
+    PARTY_OP_LEAVE    = 2,
+    PARTY_OP_SWAP     = 4
+};
+
+enum BarberShopResult
+{
+    BARBER_SHOP_RESULT_SUCCESS      = 0,
+    BARBER_SHOP_RESULT_NO_MONEY     = 1,
+    BARBER_SHOP_RESULT_NOT_ON_CHAIR = 2,
+    BARBER_SHOP_RESULT_NO_MONEY_2   = 3
 };
 
 enum BFLeaveReason
@@ -126,6 +134,12 @@ enum CharterTypes
     ARENA_TEAM_CHARTER_2v2_TYPE                   = 2,
     ARENA_TEAM_CHARTER_3v3_TYPE                   = 3,
     ARENA_TEAM_CHARTER_5v5_TYPE                   = 5
+};
+
+enum DeclinedNameResult
+{
+    DECLINED_NAMES_RESULT_SUCCESS = 0,
+    DECLINED_NAMES_RESULT_ERROR   = 1
 };
 
 //class to deal with packet processing
@@ -177,52 +191,53 @@ class CharacterCreateInfo
     friend class Player;
 
     protected:
-        CharacterCreateInfo(std::string const& name, uint8 race, uint8 cclass, uint8 gender, uint8 skin, uint8 face, uint8 hairStyle, uint8 hairColor, uint8 facialHair, uint8 outfitId,
-        WorldPacket& data) : Name(name), Race(race), Class(cclass), Gender(gender), Skin(skin), Face(face), HairStyle(hairStyle), HairColor(hairColor), FacialHair(facialHair),
-        OutfitId(outfitId), Data(std::move(data)), CharCount(0)
-        { }
-
         /// User specified variables
         std::string Name;
-        uint8 Race;
-        uint8 Class;
-        uint8 Gender;
-        uint8 Skin;
-        uint8 Face;
-        uint8 HairStyle;
-        uint8 HairColor;
-        uint8 FacialHair;
-        uint8 OutfitId;
-        WorldPacket Data;
+        uint8 Race       = 0;
+        uint8 Class      = 0;
+        uint8 Gender     = GENDER_NONE;
+        uint8 Skin       = 0;
+        uint8 Face       = 0;
+        uint8 HairStyle  = 0;
+        uint8 HairColor  = 0;
+        uint8 FacialHair = 0;
+        uint8 OutfitId   = 0;
 
         /// Server side data
-        uint8 CharCount;
+        uint8 CharCount = 0;
 };
 
-//npcbot
-struct NpcBotMap
+struct CharacterRenameInfo
+{
+    friend class WorldSession;
+
+    protected:
+        ObjectGuid Guid;
+        std::string Name;
+};
+
+struct CharacterCustomizeInfo : public CharacterRenameInfo
 {
     friend class Player;
-    protected:
-        NpcBotMap() : m_guid(0), m_entry(0), m_race(0), m_class(0), m_creature(NULL), m_reviveTimer(0)
-        {
-            for (uint8 i = 0; i != 18; ++i)
-                equips[i] = 0;
-        }
-        uint64 m_guid;
-        uint32 m_entry;
-        uint8  m_race;
-        uint8  m_class;
-        Creature* m_creature;
-        uint32 m_reviveTimer;
-        uint32 equips[18];
+    friend class WorldSession;
 
-    public:
-        uint64 _Guid() const { return m_guid; }
-        Creature* _Cre() const { return m_creature; }
-        uint32 const getEquips(uint8 slot) const { return equips[slot]; }
+    protected:
+        uint8 Gender     = GENDER_NONE;
+        uint8 Skin       = 0;
+        uint8 Face       = 0;
+        uint8 HairStyle  = 0;
+        uint8 HairColor  = 0;
+        uint8 FacialHair = 0;
 };
-//end bot mods
+
+struct CharacterFactionChangeInfo : public CharacterCustomizeInfo
+{
+    friend class Player;
+    friend class WorldSession;
+
+    protected:
+        uint8 Race = 0;
+};
 
 struct PacketCounter
 {
@@ -306,38 +321,37 @@ class WorldSession
         /// Handle the authentication waiting queue (to be completed)
         void SendAuthWaitQue(uint32 position);
 
-        //void SendTestCreatureQueryOpcode(uint32 entry, uint64 guid, uint32 testvalue);
-        void SendNameQueryOpcode(uint64 guid);
+        void SendNameQueryOpcode(ObjectGuid guid);
 
-        void SendTrainerList(uint64 guid);
-        void SendTrainerList(uint64 guid, std::string const& strTitle);
-        void SendListInventory(uint64 guid);
-        void SendShowBank(uint64 guid);
-        bool CanOpenMailBox(uint64 guid);
-        void SendShowMailBox(uint64 guid);
-        void SendTabardVendorActivate(uint64 guid);
+        void SendTrainerList(ObjectGuid guid);
+        void SendTrainerList(ObjectGuid guid, std::string const& strTitle);
+        void SendListInventory(ObjectGuid guid);
+        void SendShowBank(ObjectGuid guid);
+        bool CanOpenMailBox(ObjectGuid guid);
+        void SendShowMailBox(ObjectGuid guid);
+        void SendTabardVendorActivate(ObjectGuid guid);
         void SendSpiritResurrect();
         void SendBindPoint(Creature* npc);
 
         void SendAttackStop(Unit const* enemy);
 
-        void SendBattleGroundList(uint64 guid, BattlegroundTypeId bgTypeId = BATTLEGROUND_RB);
+        void SendBattleGroundList(ObjectGuid guid, BattlegroundTypeId bgTypeId = BATTLEGROUND_RB);
 
         void SendTradeStatus(TradeStatusInfo const& status);
         void SendUpdateTrade(bool trader_data = true);
         void SendCancelTrade();
 
-        void SendPetitionQueryOpcode(uint64 petitionguid);
+        void SendPetitionQueryOpcode(ObjectGuid petitionguid);
 
         // Spell
-        void HandleClientCastFlags(WorldPacket& recvPacket, uint8 castFlags, SpellCastTargets & targets);
+        void HandleClientCastFlags(WorldPacket& recvPacket, uint8 castFlags, SpellCastTargets& targets);
 
         // Pet
-        void SendPetNameQuery(uint64 guid, uint32 petnumber);
-        void SendStablePet(uint64 guid);
-        void SendStablePetCallback(PreparedQueryResult result, uint64 guid);
+        void SendPetNameQuery(ObjectGuid guid, uint32 petnumber);
+        void SendStablePet(ObjectGuid guid);
+        void SendStablePetCallback(PreparedQueryResult result, ObjectGuid guid);
         void SendStableResult(uint8 guid);
-        bool CheckStableMaster(uint64 guid);
+        bool CheckStableMaster(ObjectGuid guid);
 
         // Account Data
         AccountData* GetAccountData(AccountDataType type) { return &m_accountData[type]; }
@@ -361,17 +375,17 @@ class WorldSession
         //used with item_page table
         bool SendItemInfo(uint32 itemid, WorldPacket data);
         //auction
-        void SendAuctionHello(uint64 guid, Creature* unit);
+        void SendAuctionHello(ObjectGuid guid, Creature* unit);
         void SendAuctionCommandResult(uint32 auctionId, uint32 Action, uint32 ErrorCode, uint32 bidError = 0);
-        void SendAuctionBidderNotification(uint32 location, uint32 auctionId, uint64 bidder, uint32 bidSum, uint32 diff, uint32 item_template);
+        void SendAuctionBidderNotification(uint32 location, uint32 auctionId, ObjectGuid bidder, uint32 bidSum, uint32 diff, uint32 item_template);
         void SendAuctionOwnerNotification(AuctionEntry* auction);
 
         //Item Enchantment
-        void SendEnchantmentLog(uint64 target, uint64 caster, uint32 itemId, uint32 enchantId);
-        void SendItemEnchantTimeUpdate(uint64 Playerguid, uint64 Itemguid, uint32 slot, uint32 Duration);
+        void SendEnchantmentLog(ObjectGuid target, ObjectGuid caster, uint32 itemId, uint32 enchantId);
+        void SendItemEnchantTimeUpdate(ObjectGuid Playerguid, ObjectGuid Itemguid, uint32 slot, uint32 Duration);
 
         //Taxi
-        void SendTaxiStatus(uint64 guid);
+        void SendTaxiStatus(ObjectGuid guid);
         void SendTaxiMenu(Creature* unit);
         void SendDoFlight(uint32 mountDisplayId, uint32 path, uint32 pathNode = 0);
         bool SendLearnNewTaxiNode(Creature* unit);
@@ -380,11 +394,11 @@ class WorldSession
         // Guild/Arena Team
         void SendArenaTeamCommandResult(uint32 team_action, std::string const& team, std::string const& player, uint32 error_id = 0);
         void SendNotInArenaTeamPacket(uint8 type);
-        void SendPetitionShowList(uint64 guid);
+        void SendPetitionShowList(ObjectGuid guid);
 
         void BuildPartyMemberStatsChangedPacket(Player* player, WorldPacket* data);
 
-        void DoLootRelease(uint64 lguid);
+        void DoLootRelease(ObjectGuid lguid);
 
         // Account mute time
         time_t m_muteTime;
@@ -392,7 +406,7 @@ class WorldSession
         // Locales
         LocaleConstant GetSessionDbcLocale() const { return m_sessionDbcLocale; }
         LocaleConstant GetSessionDbLocaleIndex() const { return m_sessionDbLocaleIndex; }
-        const char *GetTrinityString(int32 entry) const;
+        char const* GetTrinityString(uint32 entry) const;
 
         uint32 GetLatency() const { return m_latency; }
         void SetLatency(uint32 latency) { m_latency = latency; }
@@ -404,10 +418,12 @@ class WorldSession
         {
             m_timeOutTime -= int32(diff);
         }
+
         void ResetTimeOutTime()
         {
             m_timeOutTime = int32(sWorld->getIntConfig(CONFIG_SOCKET_TIMEOUTTIME));
         }
+
         bool IsConnectionIdle() const
         {
             return m_timeOutTime <= 0 && !m_inQueue;
@@ -432,6 +448,13 @@ class WorldSession
         void HandleCharEnum(PreparedQueryResult result);
         void HandlePlayerLogin(LoginQueryHolder * holder);
         void HandleCharFactionOrRaceChange(WorldPacket& recvData);
+        void SendCharCreate(ResponseCodes result);
+        void SendCharDelete(ResponseCodes result);
+        void SendCharRename(ResponseCodes result, CharacterRenameInfo const& renameInfo);
+        void SendCharCustomize(ResponseCodes result, CharacterCustomizeInfo const& customizeInfo);
+        void SendCharFactionChange(ResponseCodes result, CharacterFactionChangeInfo const& factionChangeInfo);
+        void SendSetPlayerDeclinedNamesResult(DeclinedNameResult result, ObjectGuid guid);
+        void SendBarberShopResult(BarberShopResult result);
 
         // played time
         void HandlePlayedTime(WorldPacket& recvPacket);
@@ -761,7 +784,7 @@ class WorldSession
         //Pet
         void HandlePetAction(WorldPacket& recvData);
         void HandlePetStopAttack(WorldPacket& recvData);
-        void HandlePetActionHelper(Unit* pet, uint64 guid1, uint32 spellid, uint16 flag, uint64 guid2);
+        void HandlePetActionHelper(Unit* pet, ObjectGuid guid1, uint32 spellid, uint16 flag, ObjectGuid guid2);
         void HandlePetNameQuery(WorldPacket& recvData);
         void HandlePetSetAction(WorldPacket& recvData);
         void HandlePetAbandon(WorldPacket& recvData);
@@ -775,7 +798,7 @@ class WorldSession
         void HandleSetActionBarToggles(WorldPacket& recvData);
 
         void HandleCharRenameOpcode(WorldPacket& recvData);
-        void HandleChangePlayerNameOpcodeCallBack(PreparedQueryResult result, std::string const& newName);
+        void HandleChangePlayerNameOpcodeCallBack(PreparedQueryResult result, CharacterRenameInfo const* renameInfo);
         void HandleSetPlayerDeclinedNames(WorldPacket& recvData);
 
         void HandleTotemDestroyed(WorldPacket& recvData);
@@ -834,7 +857,7 @@ class WorldSession
 
         void SendLfgUpdatePlayer(lfg::LfgUpdateData const& updateData);
         void SendLfgUpdateParty(lfg::LfgUpdateData const& updateData);
-        void SendLfgRoleChosen(uint64 guid, uint8 roles);
+        void SendLfgRoleChosen(ObjectGuid guid, uint8 roles);
         void SendLfgRoleCheckUpdate(lfg::LfgRoleCheck const& pRoleCheck);
         void SendLfgLfrList(bool update);
         void SendLfgJoinResult(lfg::LfgJoinResultData const& joinData);
@@ -944,11 +967,11 @@ class WorldSession
         PreparedQueryResultFuture _charEnumCallback;
         PreparedQueryResultFuture _addIgnoreCallback;
         PreparedQueryResultFuture _stablePetCallback;
-        QueryCallback<PreparedQueryResult, std::string> _charRenameCallback;
+        QueryCallback<PreparedQueryResult, CharacterRenameInfo*> _charRenameCallback;
         QueryCallback<PreparedQueryResult, std::string> _addFriendCallback;
         QueryCallback<PreparedQueryResult, uint32> _unstablePetCallback;
         QueryCallback<PreparedQueryResult, uint32> _stableSwapCallback;
-        QueryCallback<PreparedQueryResult, uint64> _sendStabledPetCallback;
+        QueryCallback<PreparedQueryResult, ObjectGuid> _sendStabledPetCallback;
         QueryCallback<PreparedQueryResult, CharacterCreateInfo*, true> _charCreateCallback;
         QueryResultHolderFuture _charLoginCallback;
 
@@ -986,21 +1009,21 @@ class WorldSession
         // private trade methods
         void moveItems(Item* myItems[], Item* hisItems[]);
 
-        bool CanUseBank(uint64 bankerGUID = 0) const;
+        bool CanUseBank(ObjectGuid bankerGUID = ObjectGuid::Empty) const;
 
         // logging helper
         void LogUnexpectedOpcode(WorldPacket* packet, const char* status, const char *reason);
         void LogUnprocessedTail(WorldPacket* packet);
 
         // EnumData helpers
-        bool IsLegitCharacterForAccount(uint32 lowGUID)
+        bool IsLegitCharacterForAccount(ObjectGuid lowGUID)
         {
             return _legitCharacters.find(lowGUID) != _legitCharacters.end();
         }
 
         // this stores the GUIDs of the characters who can login
         // characters who failed on Player::BuildEnumData shouldn't login
-        std::set<uint32> _legitCharacters;
+        GuidSet _legitCharacters;
 
         uint32 m_GUIDLow;                                   // set logined or recently logout player (while m_playerRecentlyLogout set)
         Player* _player;
@@ -1037,7 +1060,7 @@ class WorldSession
         rbac::RBACData* _RBACData;
         uint32 expireTime;
         bool forceExit;
-        uint64 m_currentBankerGUID;
+        ObjectGuid m_currentBankerGUID;
 
         WorldSession(WorldSession const& right) = delete;
         WorldSession& operator=(WorldSession const& right) = delete;

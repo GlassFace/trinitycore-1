@@ -18,8 +18,6 @@
 #ifndef DEF_ULDUAR_H
 #define DEF_ULDUAR_H
 
-#include "InstanceScript.h"
-#include "ObjectMgr.h"
 #define UlduarScriptName "instance_ulduar"
 #define DataHeader "UU"
 
@@ -82,9 +80,9 @@ enum UlduarNPCs
     NPC_ALGALON                             = 32871,
 
     // Mimiron
-    NPC_LEVIATHAN_MKII           = 33432,
-    NPC_VX_001                   = 33651,
-    NPC_AERIAL_COMMAND_UNIT      = 33670,
+    NPC_LEVIATHAN_MKII                      = 33432,
+    NPC_VX_001                              = 33651,
+    NPC_AERIAL_COMMAND_UNIT                 = 33670,
     NPC_ASSAULT_BOT                         = 34057,
     NPC_BOMB_BOT                            = 33836,
     NPC_JUNK_BOT                            = 33855,
@@ -208,14 +206,12 @@ enum UlduarGameObjects
     GO_IRON_COUNCIL_DOOR                    = 194554,
     GO_ARCHIVUM_DOOR                        = 194556,
 
-    GO_MIMIRON_TRAIN                      = 194675,
-
     // Kologarn
     GO_KOLOGARN_CHEST_HERO                  = 195047,
     GO_KOLOGARN_CHEST                       = 195046,
     GO_KOLOGARN_BRIDGE                      = 194232,
     GO_KOLOGARN_DOOR                        = 194553,
-	
+
     // Hodir
     GO_HODIR_ENTRANCE                       = 194442,
     GO_HODIR_DOOR                           = 194634,
@@ -241,8 +237,6 @@ enum UlduarGameObjects
     GO_CACHE_OF_INNOVATION_HERO             = 194956,
     GO_CACHE_OF_INNOVATION_FIREFIGHTER_HERO = 194958,
 
-    GO_BIG_RED_BUTTON                     = 194739,
-	
     // Vezax
     GO_VEZAX_DOOR                           = 194750,
 
@@ -328,6 +322,9 @@ enum UlduarData
     DATA_MOLGEIM,
     DATA_BRUNDIR,
 
+    // Hodir
+    DATA_HODIR_RARE_CACHE,
+
     // Mimiron
     DATA_LEVIATHAN_MK_II,
     DATA_VX_001,
@@ -337,18 +334,12 @@ enum UlduarData
     DATA_MIMIRON_ELEVATOR,
     DATA_MIMIRON_TRAM,
     DATA_MIMIRON_BUTTON,
-    DATA_CALL_TRAM,
-    DATA_AERIAL_UNIT,
-
 	// Thorim
     DATA_RUNIC_COLOSSUS,
     DATA_RUNE_GIANT,
     DATA_RUNIC_DOOR,
     DATA_STONE_DOOR,
     DATA_HODIR_RARE_CHEST,
-
-    // Hodir
-    DATA_HODIR_RARE_CACHE,
 
     // Yogg-Saron
     DATA_VOICE_OF_YOGG_SARON,

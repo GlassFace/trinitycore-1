@@ -266,9 +266,9 @@ ChangeWeatherInterval = 600000
 #
 #    PlayerSaveInterval
 #        Description: Time (in milliseconds) for player save interval.
-#        Default:     900000 - (15 min)
+#        Default:     90000 - (90 seconds)
 
-PlayerSaveInterval = 900000
+PlayerSaveInterval = 90000
 
 #
 #    PlayerSave.Stats.MinLevel
@@ -288,7 +288,7 @@ PlayerSave.Stats.SaveOnlyOnLogout = 1
 
 #
 #    mmap.enablePathFinding
-#        Description: Enable/Disable pathfinding using mmaps - experimental.
+#        Description: Enable/Disable pathfinding using mmaps - recommended.
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
@@ -853,6 +853,14 @@ Instance.UnloadDelay = 1800000
 #                     true  - (Enabled, show)
 
 InstancesResetAnnounce = false
+
+#
+#    Quests.EnableQuestTracker
+#        Description: Store datas in the database about quest completion and abandonment to help finding out bugged quests.
+#        Default:     0  - (Disabled)
+#                     1  - (Enabled)
+
+Quests.EnableQuestTracker = 0
 
 #
 #    Quests.LowLevelHideDiff
@@ -2034,9 +2042,9 @@ AutoBroadcast.Center = 0
 #
 #    AutoBroadcast.Timer
 #        Description: Timer (in milliseconds) for auto broadcasts.
-#        Default:     60000 - (60 seconds)
+#        Default:     60000 - (10 minutes)
 
-AutoBroadcast.Timer = 60000
+AutoBroadcast.Timer = 600000
 
 #
 ###################################################################################################
@@ -2650,83 +2658,23 @@ PlayerDump.DisallowOverwrite = 1
 UI.ShowQuestLevelsInDialogs = 0
 
 #
+#     Calculate.Creature.Zone.Area.Data
+#        Description: Calculate at loading creature zoneId / areaId and save in creature table (WARNING: SLOW WORLD SERVER STARTUP)
+#        Default:     0  - (Do not show)
+
+Calculate.Creature.Zone.Area.Data = 0
+
+#
+#     Calculate.Gameoject.Zone.Area.Data
+#        Description: Calculate at loading gameobject zoneId / areaId and save in gameobject table (WARNING: SLOW WORLD SERVER STARTUP)
+#        Default:     0  - (Do not show)
+
+Calculate.Gameoject.Zone.Area.Data = 0
+
+#
 ###################################################################################################
 
 ###################################################################################################
-#  LOGGING SYSTEM SETTINGS
-#
-#  Appender config values: Given a appender "name"
-#    Appender.name
-#        Description: Defines 'where to log'.
-#        Format:      Type,LogLevel,Flags,optional1,optional2,optional3
-#
-#                     Type
-#                         0 - (None)
-#                         1 - (Console)
-#                         2 - (File)
-#                         3 - (DB)
-#
-#                     LogLevel
-#                         0 - (Disabled)
-#                         1 - (Trace)
-#                         2 - (Debug)
-#                         3 - (Info)
-#                         4 - (Warn)
-#                         5 - (Error)
-#                         6 - (Fatal)
-#
-#                     Flags:
-#                         0 - None
-#                         1 - Prefix Timestamp to the text
-#                         2 - Prefix Log Level to the text
-#                         4 - Prefix Log Filter type to the text
-#                         8 - Append timestamp to the log file name. Format: YYYY-MM-DD_HH-MM-SS
-#                             (Only used with Type = 2)
-#                        16 - Make a backup of existing file before overwrite
-#                             (Only used with Mode = w)
-#
-#                     Colors (read as optional1 if Type = Console)
-#                         Format: "fatal error warn info debug trace"
-#                         0 - BLACK
-#                         1 - RED
-#                         2 - GREEN
-#                         3 - BROWN
-#                         4 - BLUE
-#                         5 - MAGENTA
-#                         6 - CYAN
-#                         7 - GREY
-#                         8 - YELLOW
-#                         9 - LRED
-#                        10 - LGREEN
-#                        11 - LBLUE
-#                        12 - LMAGENTA
-#                        13 - LCYAN
-#                        14 - WHITE
-#                         Example: "13 11 9 5 3 1"
-#
-#                     File: Name of the file (read as optional1 if Type = File)
-#                         Allows to use one "%s" to create dynamic files
-#
-#                     Mode: Mode to open the file (read as optional2 if Type = File)
-#                          a - (Append)
-#                          w - (Overwrite)
-#
-#                     MaxFileSize: Maximum file size of the log file before creating a new log file
-#                     (read as optional3 if Type = File)
-#                         Size is measured in bytes expressed in a 64-bit unsigned integer.
-#                         Maximum value is 4294967295 (4 gb). Leave blank for no limit.
-#                         NOTE: Does not work with dynamic filenames.
-#                         Example:  536870912 (512 mb)
-#
-
-Appender.Console=1,3,0
-Appender.Server=2,2,0,Server.log,w
-Appender.GM=2,2,15,gm/gm_%s.log
-Appender.DBErrors=2,2,0,DBErrors.log
-Appender.Eluna=2,5,3,Eluna.log,a
-
-#########
-
 # AUCTION HOUSE BOT SETTINGS
 #
 #    AuctionHouseBot.Update.Interval
@@ -2949,7 +2897,10 @@ AuctionHouseBot.Class.Key = 1
 AuctionHouseBot.Class.Misc = 5
 AuctionHouseBot.Class.Glyph = 3
 
-###################################################################################################################
+#
+###################################################################################################
+
+###################################################################################################
 #
 # AHBot ITEM FINE TUNING
 #    The following are usefull for limiting what character levels can
@@ -3021,9 +2972,9 @@ AuctionHouseBot.forceIncludeItems = ""
 AuctionHouseBot.forceExcludeItems = ""
 
 #
-###################################################################################################################
+###################################################################################################
 
-###################################################################################################################
+###################################################################################################
 #    AHBot Buyer config
 #
 #    AuctionHouseBot.Buyer.Enabled
@@ -3071,7 +3022,80 @@ AuctionHouseBot.Buyer.Horde.Chance.Ratio = 3
 AuctionHouseBot.Buyer.Neutral.Chance.Ratio = 3
 
 #
-###################################################################################################################
+###################################################################################################
+
+###################################################################################################
+#  LOGGING SYSTEM SETTINGS
+#
+#  Appender config values: Given a appender "name"
+#    Appender.name
+#        Description: Defines 'where to log'.
+#        Format:      Type,LogLevel,Flags,optional1,optional2,optional3
+#
+#                     Type
+#                         0 - (None)
+#                         1 - (Console)
+#                         2 - (File)
+#                         3 - (DB)
+#
+#                     LogLevel
+#                         0 - (Disabled)
+#                         1 - (Trace)
+#                         2 - (Debug)
+#                         3 - (Info)
+#                         4 - (Warn)
+#                         5 - (Error)
+#                         6 - (Fatal)
+#
+#                     Flags:
+#                         0 - None
+#                         1 - Prefix Timestamp to the text
+#                         2 - Prefix Log Level to the text
+#                         4 - Prefix Log Filter type to the text
+#                         8 - Append timestamp to the log file name. Format: YYYY-MM-DD_HH-MM-SS
+#                             (Only used with Type = 2)
+#                        16 - Make a backup of existing file before overwrite
+#                             (Only used with Mode = w)
+#
+#                     Colors (read as optional1 if Type = Console)
+#                         Format: "fatal error warn info debug trace"
+#                         0 - BLACK
+#                         1 - RED
+#                         2 - GREEN
+#                         3 - BROWN
+#                         4 - BLUE
+#                         5 - MAGENTA
+#                         6 - CYAN
+#                         7 - GREY
+#                         8 - YELLOW
+#                         9 - LRED
+#                        10 - LGREEN
+#                        11 - LBLUE
+#                        12 - LMAGENTA
+#                        13 - LCYAN
+#                        14 - WHITE
+#                         Example: "13 11 9 5 3 1"
+#
+#                     File: Name of the file (read as optional1 if Type = File)
+#                         Allows to use one "%s" to create dynamic files
+#
+#                     Mode: Mode to open the file (read as optional2 if Type = File)
+#                          a - (Append)
+#                          w - (Overwrite)
+#
+#                     MaxFileSize: Maximum file size of the log file before creating a new log file
+#                     (read as optional3 if Type = File)
+#                         Size is measured in bytes expressed in a 64-bit unsigned integer.
+#                         Maximum value is 4294967295 (4 gb). Leave blank for no limit.
+#                         NOTE: Does not work with dynamic filenames.
+#                         Example:  536870912 (512 mb)
+#
+
+Appender.Console=1,3,0
+Appender.Server=2,2,0,Server.log,w
+Appender.GM=2,2,15,gm/gm_%s.log
+Appender.DBErrors=2,2,0,DBErrors.log
+Appender.Eluna=2,5,3,Eluna.log,a
 
 #  Logger config values: Given a logger "name"
 #    Logger.name
@@ -3156,6 +3180,7 @@ Log.Async.Enable = 0
 #                     1 - (Enabled)
 
 Allow.IP.Based.Action.Logging = 0
+
 #
 ###################################################################################################
 
@@ -3193,312 +3218,3 @@ PacketSpoof.BanDuration = 86400
 
 #
 ###################################################################################################
-
-###################################################################################################
-#    Transmogrification config
-###################################################################################################
-#
-#    SETTINGS
-#
-#    Logger.custom.transmog
-#        Description: Transmogrification logging setting, see logger settings
-#        Default:    3, Console Server
-#
-#    Transmogrification.EnableTransmogInfo
-#        Description: Enables / Disables the info button for transmogrification
-#        Default:    1
-#
-#    Transmogrification.TransmogNpcText
-#        Description: The npc_text entry of the info menu for transmogrification
-#        Default:    50000
-#
-#    Transmogrification.Allowed
-#        Description: A list of item entries that are allowed for transmogrification (skips quality and CanUseItem check)
-#					  Example: "25 35674 5623"
-#        Default:    ""
-#
-#    Transmogrification.NotAllowed
-#        Description: A list of item entries that are NOT allowed for transmogrification
-#					  Example: "25 35674 5623"
-#        Default:    ""
-
-Logger.custom.transmog = 3, Console Server
-
-Transmogrification.EnableTransmogInfo = 1
-Transmogrification.TransmogNpcText = 50000
-
-Transmogrification.Allowed = ""
-Transmogrification.NotAllowed = ""
-
-#
-#    COPPER COST
-#
-#    Transmogrification.ScaledCostModifier
-#        Description: A multiplier for the default gold cost (change to 0 for no default cost)
-#        Default:    1.0
-#
-#    Transmogrification.CopperCost
-#        Description: Cost added on top of other costs (can be negative)
-#        Default:    0
-#
-#    For custom gold cost set ScaledCostModifier to 0.0 and CopperCost to what ever cost you want
-
-Transmogrification.ScaledCostModifier = 1.0
-Transmogrification.CopperCost = 0
-
-#
-#    TOKEN COST
-#
-#    Transmogrification.RequireToken
-#        Description: Adds/disables token cost
-#        Default:    0
-#
-#    Transmogrification.TokenEntry
-#        Description: Entry of the token item
-#        Default:    49426
-#
-#    Transmogrification.TokenAmount
-#        Description: Amount of tokens required
-#        Default:    1
-
-Transmogrification.RequireToken = 0
-Transmogrification.TokenEntry = 49426
-Transmogrification.TokenAmount = 1
-
-#
-#    REQUIREMENTS
-#
-#    Transmogrification.AllowPoor
-#        Description: Allow poor quality items to be used as source and target items
-#        Default:    0
-#
-#    Transmogrification.AllowCommon
-#        Description: Allow common quality items to be used as source and target items
-#        Default:    0
-#
-#    Transmogrification.AllowUncommon
-#        Description: Allow uncommon quality items to be used as source and target items
-#        Default:    1
-#
-#    Transmogrification.AllowRare
-#        Description: Allow rare quality items to be used as source and target items
-#        Default:    1
-#
-#    Transmogrification.AllowEpic
-#        Description: Allow epic quality items to be used as source and target items
-#        Default:    1
-#
-#    Transmogrification.AllowLegendary
-#        Description: Allow legendary quality items to be used as source and target items
-#        Default:    0
-#
-#    Transmogrification.AllowArtifact
-#        Description: Allow artifact quality items to be used as source and target items
-#        Default:    0
-#
-#    Transmogrification.AllowHeirloom
-#        Description: Allow heirloom quality items to be used as source and target items
-#        Default:    1
-#
-#    Transmogrification.AllowMixedArmorTypes
-#        Description: Allow cloth items to be transmogrified with plate for example
-#        Default:    0
-#
-#    Transmogrification.AllowMixedWeaponTypes
-#        Description: Allow axe to be transmogrified with dagger for example
-#        Default:    0
-#
-#    Transmogrification.AllowFishingPoles
-#        Description: Allow fishing poles to be transmogrified
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqRace
-#        Description: Ignore required race for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqClass
-#        Description: Ignore required class for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqSkill
-#        Description: Ignore required skill for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqSpell
-#        Description: Ignore required spell for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqLevel
-#        Description: Ignore required level for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqEvent
-#        Description: Ignore required event for source items
-#        Default:    0
-#
-#    Transmogrification.IgnoreReqStats
-#        Description: Ignore stat count > 0 requirement for source items
-#        Default:    0
-
-Transmogrification.AllowPoor = 0
-Transmogrification.AllowCommon = 0
-Transmogrification.AllowUncommon = 1
-Transmogrification.AllowRare = 1
-Transmogrification.AllowEpic = 1
-Transmogrification.AllowLegendary = 0
-Transmogrification.AllowArtifact = 0
-Transmogrification.AllowHeirloom = 1
-
-Transmogrification.AllowMixedArmorTypes = 0
-Transmogrification.AllowMixedWeaponTypes = 0
-Transmogrification.AllowFishingPoles = 0
-
-Transmogrification.IgnoreReqRace = 0
-Transmogrification.IgnoreReqClass = 0
-Transmogrification.IgnoreReqSkill = 0
-Transmogrification.IgnoreReqSpell = 0
-Transmogrification.IgnoreReqLevel = 0
-Transmogrification.IgnoreReqEvent = 0
-Transmogrification.IgnoreReqStats = 0
-
-#
-#    SET FEATURE
-#
-#    Transmogrification.EnableSets
-#        Description: Enables / Disables the set feature. If you want permanent disable, check Transmogrification.h
-#        Default:    1
-#
-#    Transmogrification.MaxSets
-#        Description: Maximum amount of sets a player can save (hardcap at 25)
-#        Default:    10
-#
-#    Transmogrification.EnableSetInfo
-#        Description: Enables / Disables the info button for set fature
-#        Default:    1
-#
-#    Transmogrification.SetNpcText
-#        Description: The npc_text entry of the info menu for the set feature
-#        Default:    50001
-#
-#    Transmogrification.SetCostModifier
-#        Description: A multiplier for the default gold cost (all costs summed together) (change to 0 for no default cost)
-#        Default:    3.0
-#
-#    Transmogrification.SetCopperCost
-#        Description: Cost added on top of other costs (can be negative)
-#        Default:    0
-
-Transmogrification.EnableSets = 1
-Transmogrification.MaxSets = 10
-
-Transmogrification.EnableSetInfo = 1
-Transmogrification.SetNpcText = 50001
-
-Transmogrification.SetCostModifier = 3.0
-Transmogrification.SetCopperCost = 0
-
-#
-###################################################################################################
-config.levelcap = 1
-
-###################################################################################################
-# NPCBOT CONFIGURATION
-#
-#     Bot.EnableNpcBots
-#        Enable NpcBot system
-#        Default: 1 - enable
-#                       0 - disable
-
-Bot.EnableNpcBots = 1
-
-#    Bot.MaxNpcBots
-#        Maximum number of Npc Bots allowed per character (disabled for GM accounts)
-#        Default: 1
-#        Recomended: 4
-#        Max: 9
-#        Absolute Max: 39
-
-Bot.MaxNpcBots = 1
-
-#    Bot.MaxNpcBotsPerClass
-#        Maximum Npc Bots of each class allowed per character
-#        If set to 0, no restriction
-#        Default: 1
-
-Bot.MaxNpcBotsPerClass = 1
-
-#    Bot.BaseFollowDistance
-#        Default follow distance set at login
-#        Default: 30
-
-Bot.BaseFollowDistance = 30
-
-#    Bot.XpReductionPercent
-#        Since bot party can be pretty large, it can become an exploit to farm xp so you can reduce xp gain here
-#        PERCENT of  'XP.KILL'  reward reduction from each Npc Bots used (Starting with second)
-#        Example:
-#            You have 3 bots, xp reduction is 20 then reduction will be ((3-1)*20) = 40%; 60% exp gained only
-#        Note: Minimum xp rate will be 10%
-#        Min: 0
-#        Max: 90
-#        Default: 0
-
-Bot.XpReductionPercent = 0
-
-#    Bot.HealTargetIconsMask
-#        Icon number bitmask which bots are using to search for additional targets to heal (out of party)
-#        1 - Star
-#        2 - Circle
-#        4 - Diamond
-#        8 - Triangle
-#        16 - Moon
-#        32 - Square
-#        64 - Cross
-#        128 - Skull
-#        Example: to check Star, Triangle and Square we need 1+8+32 = 41
-#        Note that many creatures cannot accept heal
-#        Min: 0 (Disable)
-#        Max: 255 (Any Icon)
-#        Default: 8 (Triangle)
-
-Bot.HealTargetIconsMask = 8
-
-#    Bot.DamageMult
-#        Myltiplier for bot's damage dealt. Allows to balance bots' compared to players' damage
-#        Any damage done by bots will be modified
-#        Range: 0.01 - 10.0
-#        Default: 1.0
-
-Bot.DamageMult.Melee = 1.0
-Bot.DamageMult.Spell = 1.0
-
-#    Bot.EnableIn... Arenas/BGs/Dungeons/Raids
-#        Allows to restrict bots usage in PvE and/or PvP
-#        Default: true for all
-
-Bot.EnableInArenas = 1
-Bot.EnableInBGs = 1
-Bot.EnableInDungeons = 1
-Bot.EnableInRaids = 1
-
-#    Bot.InstanceLimit... Dungeons/Raids
-#        If set to 1 will apply instance players limitation to bots
-#        Default: false for all
-
-Bot.InstanceLimit.Dungeons = 0
-Bot.InstanceLimit.Raids = 0
-
-#    Bot.Cost
-#        Bot recruitment cost (in copper)
-#        Note: this value is set for lvl 80 characters. Cost will be reduced for lower levels
-#        Default: 0
-
-Bot.Cost = 0
-
-#    Bot.PvP
-#        If set to 0 bots will not attack  players or other bots
-#        Default: 1
-
-Bot.PvP = 1
-
-#

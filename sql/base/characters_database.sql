@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.9-rc, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.5.40, for debian-linux-gnu (x86_64)
 --
 -- Host: localhost    Database: characters
 -- ------------------------------------------------------
--- Server version	5.6.9-rc
+-- Server version	5.5.40-0ubuntu0.14.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -1621,14 +1621,14 @@ CREATE TABLE `groups` (
   `lootMethod` tinyint(3) unsigned NOT NULL,
   `looterGuid` int(10) unsigned NOT NULL,
   `lootThreshold` tinyint(3) unsigned NOT NULL,
-  `icon1` int(10) unsigned NOT NULL,
-  `icon2` int(10) unsigned NOT NULL,
-  `icon3` int(10) unsigned NOT NULL,
-  `icon4` int(10) unsigned NOT NULL,
-  `icon5` int(10) unsigned NOT NULL,
-  `icon6` int(10) unsigned NOT NULL,
-  `icon7` int(10) unsigned NOT NULL,
-  `icon8` int(10) unsigned NOT NULL,
+  `icon1` bigint(20) unsigned NOT NULL,
+  `icon2` bigint(20) unsigned NOT NULL,
+  `icon3` bigint(20) unsigned NOT NULL,
+  `icon4` bigint(20) unsigned NOT NULL,
+  `icon5` bigint(20) unsigned NOT NULL,
+  `icon6` bigint(20) unsigned NOT NULL,
+  `icon7` bigint(20) unsigned NOT NULL,
+  `icon8` bigint(20) unsigned NOT NULL,
   `groupType` tinyint(3) unsigned NOT NULL,
   `difficulty` tinyint(3) unsigned NOT NULL DEFAULT '0',
   `raiddifficulty` tinyint(3) unsigned NOT NULL DEFAULT '0',
@@ -2439,6 +2439,34 @@ LOCK TABLES `pvpstats_players` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `quest_tracker`
+--
+
+DROP TABLE IF EXISTS `quest_tracker`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `quest_tracker` (
+  `id` mediumint(8) unsigned NOT NULL DEFAULT '0',
+  `character_guid` int(10) unsigned NOT NULL DEFAULT '0',
+  `quest_accept_time` datetime NOT NULL,
+  `quest_complete_time` datetime DEFAULT NULL,
+  `quest_abandon_time` datetime DEFAULT NULL,
+  `completed_by_gm` tinyint(1) NOT NULL DEFAULT '0',
+  `core_hash` varchar(120) NOT NULL DEFAULT '0',
+  `core_revision` varchar(120) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `quest_tracker`
+--
+
+LOCK TABLES `quest_tracker` WRITE;
+/*!40000 ALTER TABLE `quest_tracker` DISABLE KEYS */;
+/*!40000 ALTER TABLE `quest_tracker` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `reserved_name`
 --
 
@@ -2517,4 +2545,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2014-08-28 15:30:47
+-- Dump completed on 2014-10-18 18:02:06

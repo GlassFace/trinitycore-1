@@ -330,7 +330,7 @@ public:
 
             // Respawn Mini Bosses
             for (uint8 i = DATA_RUNIC_COLOSSUS; i <= DATA_RUNE_GIANT; ++i)
-                if (Creature* MiniBoss = me->GetCreature(*me, instance->GetData64(i)))
+			if (Creature* MiniBoss = ObjectAccessor::GetCreature(*me, instance->GetGuidData(i)))
                     MiniBoss->Respawn(true);
 
             // Spawn Pre-Phase Adds
@@ -398,7 +398,7 @@ public:
             events.ScheduleEvent(EVENT_BERSERK, 360000, 0, PHASE_1);
             events.ScheduleEvent(EVENT_SAY_AGGRO_2, 10000, 0, PHASE_1);
 
-            if (Creature* runic = me->GetCreature(*me, instance->GetData64(DATA_RUNIC_COLOSSUS)))
+			if (Creature* runic = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_RUNIC_COLOSSUS)))
             {
                 runic->setActive(true);
                 runic->AI()->DoAction(ACTION_RUNIC_SMASH);
@@ -586,8 +586,8 @@ public:
 
             if (phase == PHASE_1 && attacker && instance)
             {
-                Creature* colossus = me->GetCreature(*me, instance->GetData64(DATA_RUNIC_COLOSSUS));
-                Creature* giant = me->GetCreature(*me, instance->GetData64(DATA_RUNE_GIANT));
+				Creature* colossus = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_RUNIC_COLOSSUS));
+				Creature* giant = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_RUNE_GIANT));
                 if (colossus && colossus->isDead() && giant && giant->isDead() && me->IsWithinDistInMap(attacker, 10.0f) && attacker->ToPlayer())
                 {
                     Talk(SAY_JUMPDOWN);
@@ -658,7 +658,7 @@ public:
 
         void JustDied(Unit* /*victim*/)
         {
-            if (Creature* pThorim = me->GetCreature(*me, pInstance->GetData64(BOSS_THORIM)))
+			if (Creature* pThorim = ObjectAccessor::GetCreature(*me, pInstance->GetGuidData(BOSS_THORIM)))
                 pThorim->AI()->DoAction(ACTION_INCREASE_PREADDS_COUNT);
         }
 
@@ -762,7 +762,7 @@ class npc_thorim_arena_phase : public CreatureScript
             // might be called by mind control release or controllers death?
             void EnterEvadeMode()
             {
-                if (Creature* thorim = me->GetCreature(*me, _instance ? _instance->GetData64(BOSS_THORIM) : 0))
+				if (Creature* thorim = ObjectAccessor::GetCreature(*me, _instance->GetGuidData(BOSS_THORIM)))
                     thorim->AI()->DoAction(ACTION_BERSERK);
                 _EnterEvadeMode();
                 me->GetMotionMaster()->MoveTargetedHome();

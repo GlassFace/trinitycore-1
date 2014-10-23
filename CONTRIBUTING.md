@@ -39,12 +39,12 @@ Requirements
 
 Platform: Linux, Windows or Mac  
 Processor with SSE2 support  
-Boost ¡Ý 1.4.9  
-MySQL ¡Ý 5.1.0
-CMake ¡Ý 2.8.11.2 / 2.8.9 (Windows / Linux) 
-OpenSSL ¡Ý 1.0.0  
-GCC ¡Ý 4.7.2 (Linux only)  
-MS Visual Studio ¡Ý 12 (2013) (Windows only)
+Boost â‰¥ 1.4.9  
+MySQL â‰¥ 5.1.0
+CMake â‰¥ 2.8.11.2 / 2.8.9 (Windows / Linux) 
+OpenSSL â‰¥ 1.0.0  
+GCC â‰¥ 4.7.2 (Linux only)  
+MS Visual Studio â‰¥ 12 (2013) (Windows only)
 
 In case you choose Linux, we recommend to use Debian 7, it's the Linux we use to test compilations.  
 Remember 4.3.4 branch is alpha, only intended for development, we don't recomend this branch to run a server.

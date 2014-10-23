@@ -961,7 +961,14 @@ enum TrinityStrings
     LANG_AHBOT_QUALITY_YELLOW           = 1174,
     LANG_AHBOT_ITEMS_AMOUNT             = 1175,
     LANG_AHBOT_ITEMS_RATIO              = 1176,
-    // Room for more level 3              1177-1199 not used
+    LANG_GUILD_INFO_NAME                = 1177,
+    LANG_GUILD_INFO_GUILD_MASTER        = 1178,
+    LANG_GUILD_INFO_CREATION_DATE       = 1179,
+    LANG_GUILD_INFO_MEMBER_COUNT        = 1180,
+    LANG_GUILD_INFO_BANK_GOLD           = 1181,
+    LANG_GUILD_INFO_MOTD                = 1182,
+    LANG_GUILD_INFO_EXTRA_INFO          = 1183,
+    // Room for more level 3              1184-1199 not used
 
     // Debug commands
     LANG_CINEMATIC_NOT_EXIST            = 1200,
@@ -1087,7 +1094,7 @@ enum TrinityStrings
     LANG_GPS_POSITION_OUTDOORS          = 5042,
     LANG_GPS_POSITION_INDOORS           = 5043,
     LANG_GPS_NO_VMAP                    = 5044,
-    
+
     // Instance commands
     LANG_COMMAND_LIST_BIND_INFO         = 5045,
     LANG_COMMAND_LIST_BIND_PLAYER_BINDS = 5046,
@@ -1101,8 +1108,15 @@ enum TrinityStrings
     LANG_COMMAND_INST_STAT_GROUPSBOUND  = 5054,
     LANG_NOT_DUNGEON                    = 5055, // Map is not a dungeon.
     LANG_NO_INSTANCE_DATA               = 5056, // Map has no instance data.
+    LANG_COMMAND_INST_SET_BOSS_STATE    = 5057,
+    LANG_COMMAND_INST_GET_BOSS_STATE    = 5058,
 
-    // Room for more Trinity strings      5057-9999
+    // Mutehistory commands
+    LANG_COMMAND_MUTEHISTORY            = 5059,
+    LANG_COMMAND_MUTEHISTORY_EMPTY      = 5060,
+    LANG_COMMAND_MUTEHISTORY_OUTPUT     = 5061,
+
+    // Room for more Trinity strings      5062-9999
 
     // Level requirement notifications
     LANG_SAY_REQ                        = 6604,
@@ -1185,8 +1199,5 @@ enum TrinityStrings
 
     LANG_NPCINFO_INHABIT_TYPE                     = 11008,
     LANG_NPCINFO_FLAGS_EXTRA                      = 11009
-
-    // NOT RESERVED IDS                   12000-1999999999
-    // For other tables maybe             2000010000-2147483647 (max index)
 };
 #endif

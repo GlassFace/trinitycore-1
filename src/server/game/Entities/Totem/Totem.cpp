@@ -113,7 +113,7 @@ void Totem::UnSummon(uint32 msTime)
     {
         if (GetOwner()->m_SummonSlot[i] == GetGUID())
         {
-            GetOwner()->m_SummonSlot[i] = 0;
+            GetOwner()->m_SummonSlot[i].Clear();
             break;
         }
     }
@@ -142,13 +142,6 @@ void Totem::UnSummon(uint32 msTime)
             }
         }
     }
-
-    //npcbot: send SummonedCreatureDespawn()
-    if (IS_CREATURE_GUID(GetCreatorGUID()))
-        if (Unit* bot = sObjectAccessor->FindUnit(GetCreatorGUID()))
-            if (bot->ToCreature()->GetIAmABot())
-                bot->ToCreature()->OnBotDespawn(this);
-    //end npcbot
 
     AddObjectToRemoveList();
 }

@@ -172,7 +172,7 @@ enum Spells
     SPELL_MAGNETIC_CORE                         = 64436,
     SPELL_MAGNETIC_CORE_VISUAL                  = 64438,
     SPELL_HALF_HEAL                             = 64188,
-    SPELL_CLEAR_ALL_DEBUFFS                     = 34098, // TODO: make use of this spell...
+    SPELL_CLEAR_ALL_DEBUFFS                     = 34098, /// @todo: make use of this spell...
     SPELL_FREEZE_ANIM_STUN                      = 63354, // used to prevent mkii from doing stuff?..
     SPELL_FREEZE_ANIM                           = 16245  // Idle aura. Freezes animation.
 };
@@ -303,17 +303,10 @@ enum Actions
 
 enum Phases
 {
-    // Leviathan MK II
-    PHASE_LEVIATHAN_SOLO = 1,
-    PHASE_LEVIATHAN_ASSEMBLED,
-
-    // VX-001
-    PHASE_VX001_SOLO,
-    PHASE_VX001_ASSEMBLED,
-
-    // Aerial Command Unit
-    PHASE_AERIAL_SOLO,
-    PHASE_AERIAL_ASSEMBLED
+    PHASE_LEVIATHAN_MK_II = 1,
+    PHASE_VX_001,
+    PHASE_AERIAL_COMMAND_UNIT,
+    PHASE_VOL7RON
 };
 
 enum Waypoints
@@ -354,9 +347,9 @@ static bool IsEncounterFinished(Unit* who)
 {
     InstanceScript* instance = who->GetInstanceScript();
 
-    Creature* mkii = ObjectAccessor::GetCreature(*who, instance->GetData64(DATA_LEVIATHAN_MK_II));
-    Creature* vx001 = ObjectAccessor::GetCreature(*who, instance->GetData64(DATA_VX_001));
-    Creature* aerial = ObjectAccessor::GetCreature(*who, instance->GetData64(DATA_AERIAL_COMMAND_UNIT));
+    Creature* mkii = ObjectAccessor::GetCreature(*who, instance->GetGuidData(DATA_LEVIATHAN_MK_II));
+    Creature* vx001 = ObjectAccessor::GetCreature(*who, instance->GetGuidData(DATA_VX_001));
+    Creature* aerial = ObjectAccessor::GetCreature(*who, instance->GetGuidData(DATA_AERIAL_COMMAND_UNIT));
     if (!mkii || !vx001 || !aerial)
         return false;
 
@@ -370,7 +363,7 @@ static bool IsEncounterFinished(Unit* who)
         mkii->DespawnOrUnsummon(120000);
         vx001->DespawnOrUnsummon(120000);
         aerial->DespawnOrUnsummon(120000);
-        if (Creature* mimiron = ObjectAccessor::GetCreature(*who, instance->GetData64(BOSS_MIMIRON)))
+        if (Creature* mimiron = ObjectAccessor::GetCreature(*who, instance->GetGuidData(BOSS_MIMIRON)))
             mimiron->AI()->JustDied(who);
         return true;
     }
@@ -402,7 +395,7 @@ class boss_mimiron : public CreatureScript
                         break;
                     case DO_ACTIVATE_V0L7R0N_1:
                         Talk(SAY_AERIAL_DEATH);
-                        if (Creature* mkii = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_LEVIATHAN_MK_II)))
+                        if (Creature* mkii = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_LEVIATHAN_MK_II)))
                             mkii->GetMotionMaster()->MovePoint(WP_MKII_P4_POS_1, VehicleRelocation[WP_MKII_P4_POS_1]);
                         break;
                     case DO_ACTIVATE_V0L7R0N_2:
@@ -427,14 +420,14 @@ class boss_mimiron : public CreatureScript
                 me->RemoveAurasDueToSpell(SPELL_WELD);
                 DoCast(me->GetVehicleBase(), SPELL_SEAT_6);
 
-                if (GameObject* button = ObjectAccessor::GetGameObject(*me, instance->GetData64(DATA_MIMIRON_BUTTON)))
+                if (GameObject* button = ObjectAccessor::GetGameObject(*me, instance->GetGuidData(DATA_MIMIRON_BUTTON)))
                     button->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE);
 
                 if (_fireFighter)
                     events.ScheduleEvent(EVENT_SUMMON_FLAMES, 3000);
                 events.ScheduleEvent(EVENT_INTRO_1, 1500);
             }
-            
+
             void JustDied(Unit* /*who*/) override
             {
                 instance->SetBossState(BOSS_MIMIRON, DONE);
@@ -456,13 +449,15 @@ class boss_mimiron : public CreatureScript
 
                 _Reset();
                 me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                instance->SetData(DATA_MIMIRON_ELEVATOR, GO_STATE_ACTIVE);
+
+                if (GameObject* elevator = ObjectAccessor::GetGameObject(*me, instance->GetGuidData(DATA_MIMIRON_ELEVATOR)))
+                    elevator->SetGoState(GO_STATE_ACTIVE);
 
                 if (_fireFighter)
-                    if (Creature* computer = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_COMPUTER)))
+                    if (Creature* computer = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_COMPUTER)))
                         computer->AI()->DoAction(DO_DEACTIVATE_COMPUTER);
 
-                if (GameObject* button = ObjectAccessor::GetGameObject(*me, instance->GetData64(DATA_MIMIRON_BUTTON)))
+                if (GameObject* button = ObjectAccessor::GetGameObject(*me, instance->GetGuidData(DATA_MIMIRON_BUTTON)))
                 {
                     button->SetGoState(GO_STATE_READY);
                     button->RemoveFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE);
@@ -471,7 +466,7 @@ class boss_mimiron : public CreatureScript
                 _fireFighter = false;
                 DoCast(me, SPELL_WELD);
 
-                if (Unit* mkii = ObjectAccessor::GetUnit(*me, instance->GetData64(DATA_LEVIATHAN_MK_II)))
+                if (Unit* mkii = ObjectAccessor::GetUnit(*me, instance->GetGuidData(DATA_LEVIATHAN_MK_II)))
                     DoCast(mkii, SPELL_SEAT_3);
             }
 
@@ -490,7 +485,7 @@ class boss_mimiron : public CreatureScript
                     switch (eventId)
                     {
                         case EVENT_SUMMON_FLAMES:
-                            if (Unit* worldtrigger = ObjectAccessor::GetUnit(*me, instance->GetData64(DATA_MIMIRON_WORLD_TRIGGER)))
+                            if (Unit* worldtrigger = ObjectAccessor::GetUnit(*me, instance->GetGuidData(DATA_MIMIRON_WORLD_TRIGGER)))
                                 worldtrigger->CastCustomSpell(SPELL_SCRIPT_EFFECT_SUMMON_FLAMES_INITIAL, SPELLVALUE_MAX_TARGETS, 3, NULL, true, NULL, NULL, me->GetGUID());
                             events.RescheduleEvent(EVENT_SUMMON_FLAMES, 28000);
                             break;
@@ -526,19 +521,21 @@ class boss_mimiron : public CreatureScript
                             events.ScheduleEvent(EVENT_VX001_ACTIVATION_4, 5000);
                             break;
                         case EVENT_VX001_ACTIVATION_4:
-                            instance->SetData(DATA_MIMIRON_ELEVATOR, GO_STATE_READY);
-                            if (Unit* worldtrigger = ObjectAccessor::GetUnit(*me, instance->GetData64(DATA_MIMIRON_WORLD_TRIGGER)))
+                            if (GameObject* elevator = ObjectAccessor::GetGameObject(*me, instance->GetGuidData(DATA_MIMIRON_ELEVATOR)))
+                                elevator->SetGoState(GO_STATE_READY);
+                            if (Unit* worldtrigger = ObjectAccessor::GetUnit(*me, instance->GetGuidData(DATA_MIMIRON_WORLD_TRIGGER)))
                                 worldtrigger->CastSpell(worldtrigger, SPELL_ELEVATOR_KNOCKBACK);
                             events.ScheduleEvent(EVENT_VX001_ACTIVATION_5, 6000);
                             break;
                         case EVENT_VX001_ACTIVATION_5:
+                            if (GameObject* elevator = ObjectAccessor::GetGameObject(*me, instance->GetGuidData(DATA_MIMIRON_ELEVATOR)))
+                                elevator->SetGoState(GO_STATE_ACTIVE_ALTERNATIVE);
                             if (Creature* vx001 = me->SummonCreature(NPC_VX_001, VX001SummonPos, TEMPSUMMON_CORPSE_TIMED_DESPAWN, 120000))
                                 vx001->CastSpell(vx001, SPELL_FREEZE_ANIM);
-                            instance->SetData(DATA_MIMIRON_ELEVATOR, GO_STATE_ACTIVE_ALTERNATIVE);
                             events.ScheduleEvent(EVENT_VX001_ACTIVATION_6, 19000);
                             break;
                         case EVENT_VX001_ACTIVATION_6:
-                            if (Unit* vx001 = ObjectAccessor::GetUnit(*me, instance->GetData64(DATA_VX_001)))
+                            if (Unit* vx001 = ObjectAccessor::GetUnit(*me, instance->GetGuidData(DATA_VX_001)))
                                 DoCast(vx001, SPELL_SEAT_1);
                             events.ScheduleEvent(EVENT_VX001_ACTIVATION_7, 3500);
                             break;
@@ -569,7 +566,7 @@ class boss_mimiron : public CreatureScript
                             events.ScheduleEvent(EVENT_AERIAL_ACTIVATION_4, 5000);
                             break;
                         case EVENT_AERIAL_ACTIVATION_4:
-                            if (Unit* aerial = ObjectAccessor::GetUnit(*me, instance->GetData64(DATA_AERIAL_COMMAND_UNIT)))
+                            if (Unit* aerial = ObjectAccessor::GetUnit(*me, instance->GetGuidData(DATA_AERIAL_COMMAND_UNIT)))
                                 me->CastSpell(aerial, SPELL_SEAT_1);
                             events.ScheduleEvent(EVENT_AERIAL_ACTIVATION_5, 2000);
                             break;
@@ -579,17 +576,17 @@ class boss_mimiron : public CreatureScript
                             break;
                         case EVENT_AERIAL_ACTIVATION_6:
                             if (Creature* acu = me->GetVehicleCreatureBase())
-                                acu->GetAI()->DoAction(_fireFighter? DO_HARDMODE_AERIAL : DO_START_AERIAL);
+                                acu->AI()->DoAction(_fireFighter? DO_HARDMODE_AERIAL : DO_START_AERIAL);
                             break;
                         case EVENT_VOL7RON_ACTIVATION_1:
-                            if (Creature* mkii = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_LEVIATHAN_MK_II)))
+                            if (Creature* mkii = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_LEVIATHAN_MK_II)))
                                 mkii->SetFacingTo(float(M_PI));
                             events.ScheduleEvent(EVENT_VOL7RON_ACTIVATION_2, 1000);
                             break;
                         case EVENT_VOL7RON_ACTIVATION_2:
-                            if (Creature* mkii = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_LEVIATHAN_MK_II)))
+                            if (Creature* mkii = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_LEVIATHAN_MK_II)))
                             {
-                                if (Creature* vx001 = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_VX_001)))
+                                if (Creature* vx001 = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_VX_001)))
                                 {
                                     vx001->RemoveAurasDueToSpell(SPELL_TORSO_DISABLED);
                                     vx001->CastSpell(mkii, SPELL_MOUNT_MKII);
@@ -598,14 +595,14 @@ class boss_mimiron : public CreatureScript
                             events.ScheduleEvent(EVENT_VOL7RON_ACTIVATION_3, 4500);
                             break;
                         case EVENT_VOL7RON_ACTIVATION_3:
-                            if (Creature* mkii = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_LEVIATHAN_MK_II)))
+                            if (Creature* mkii = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_LEVIATHAN_MK_II)))
                                 mkii->GetMotionMaster()->MovePoint(WP_MKII_P4_POS_4, VehicleRelocation[WP_MKII_P4_POS_4]);
                             events.ScheduleEvent(EVENT_VOL7RON_ACTIVATION_4, 5000);
                             break;
                         case EVENT_VOL7RON_ACTIVATION_4:
-                            if (Creature* vx001 = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_VX_001)))
+                            if (Creature* vx001 = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_VX_001)))
                             {
-                                if (Creature* aerial = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_AERIAL_COMMAND_UNIT)))
+                                if (Creature* aerial = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_AERIAL_COMMAND_UNIT)))
                                 {
                                     aerial->GetMotionMaster()->MoveLand(0, (aerial->GetPositionX(), aerial->GetPositionY(), aerial->GetPositionZMinusOffset()));
                                     aerial->SetUInt32Value(UNIT_FIELD_BYTES_1, 0);
@@ -620,13 +617,13 @@ class boss_mimiron : public CreatureScript
                             events.ScheduleEvent(EVENT_VOL7RON_ACTIVATION_6, 3000);
                             break;
                         case EVENT_VOL7RON_ACTIVATION_6:
-                            if (Creature* vx001 = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_VX_001)))
+                            if (Creature* vx001 = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_VX_001)))
                                 DoCast(vx001, SPELL_SEAT_2);
                             events.ScheduleEvent(EVENT_VOL7RON_ACTIVATION_7, 5000);
                             break;
                         case EVENT_VOL7RON_ACTIVATION_7:
                             for (uint8 data = DATA_LEVIATHAN_MK_II; data <= DATA_AERIAL_COMMAND_UNIT; ++data)
-                                if (Creature* mimironVehicle = ObjectAccessor::GetCreature(*me, instance->GetData64(data)))
+                                if (Creature* mimironVehicle = ObjectAccessor::GetCreature(*me, instance->GetGuidData(data)))
                                     mimironVehicle->AI()->DoAction(DO_ASSEMBLED_COMBAT);
                             break;
                         case EVENT_OUTTRO_1:
@@ -639,7 +636,7 @@ class boss_mimiron : public CreatureScript
                             Talk(SAY_V07TRON_DEATH);
                             if (_fireFighter)
                             {
-                                if (Creature* computer = ObjectAccessor::GetCreature(*me, instance->GetData64(DATA_COMPUTER)))
+                                if (Creature* computer = ObjectAccessor::GetCreature(*me, instance->GetGuidData(DATA_COMPUTER)))
                                     computer->AI()->DoAction(DO_DEACTIVATE_COMPUTER);
                                 me->SummonGameObject(RAID_MODE(GO_CACHE_OF_INNOVATION_FIREFIGHTER, GO_CACHE_OF_INNOVATION_FIREFIGHTER_HERO), 2744.040f, 2569.352f, 364.3135f, 3.124123f, 0.f, 0.f, 0.9999619f, 0.008734641f, 604800);
                             }
@@ -694,7 +691,7 @@ class boss_leviathan_mk_ii : public CreatureScript
                     me->SetReactState(REACT_PASSIVE);
                     me->RemoveAllAurasExceptType(SPELL_AURA_CONTROL_VEHICLE, SPELL_AURA_MOD_INCREASE_HEALTH_PERCENT);
 
-                    if (events.IsInPhase(PHASE_LEVIATHAN_SOLO))
+                    if (events.IsInPhase(PHASE_LEVIATHAN_MK_II))
                     {
                         me->CastStop();
                         if (Unit* turret = me->GetVehicleKit()->GetPassenger(3))
@@ -703,7 +700,7 @@ class boss_leviathan_mk_ii : public CreatureScript
                         me->SetSpeed(MOVE_RUN, 1.5f, true);
                         me->GetMotionMaster()->MovePoint(WP_MKII_P1_IDLE, VehicleRelocation[WP_MKII_P1_IDLE]);
                     }
-                    else if (events.IsInPhase(PHASE_LEVIATHAN_ASSEMBLED))
+                    else if (events.IsInPhase(PHASE_VOL7RON))
                     {
                         me->SetStandState(UNIT_STAND_STATE_DEAD);
 
@@ -725,14 +722,14 @@ class boss_leviathan_mk_ii : public CreatureScript
                         _fireFighter = true;
                         DoCast(me, SPELL_EMERGENCY_MODE);
                         DoCastAOE(SPELL_EMERGENCY_MODE_TURRET);
-                        events.ScheduleEvent(EVENT_FLAME_SUPPRESSANT_MK, 60000, 0, PHASE_LEVIATHAN_SOLO);
+                        events.ScheduleEvent(EVENT_FLAME_SUPPRESSANT_MK, 60000, 0, PHASE_LEVIATHAN_MK_II);
                         // Missing break intended.
                     case DO_START_MKII:
                         me->SetReactState(REACT_AGGRESSIVE);
-                        events.SetPhase(PHASE_LEVIATHAN_SOLO);
+                        events.SetPhase(PHASE_LEVIATHAN_MK_II);
 
-                        events.ScheduleEvent(EVENT_NAPALM_SHELL, 3000, 0, PHASE_LEVIATHAN_SOLO);
-                        events.ScheduleEvent(EVENT_PLASMA_BLAST, 15000, 0, PHASE_LEVIATHAN_SOLO);
+                        events.ScheduleEvent(EVENT_NAPALM_SHELL, 3000, 0, PHASE_LEVIATHAN_MK_II);
+                        events.ScheduleEvent(EVENT_PLASMA_BLAST, 15000, 0, PHASE_LEVIATHAN_MK_II);
                         events.ScheduleEvent(EVENT_PROXIMITY_MINE, 5000);
                         events.ScheduleEvent(EVENT_SHOCK_BLAST, 18000);
                         break;
@@ -741,7 +738,7 @@ class boss_leviathan_mk_ii : public CreatureScript
                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                         me->SetReactState(REACT_AGGRESSIVE);
 
-                        events.SetPhase(PHASE_LEVIATHAN_ASSEMBLED);
+                        events.SetPhase(PHASE_VOL7RON);
                         events.ScheduleEvent(EVENT_PROXIMITY_MINE, 15000);
                         events.ScheduleEvent(EVENT_SHOCK_BLAST, 45000);
                         break;
@@ -775,22 +772,22 @@ class boss_leviathan_mk_ii : public CreatureScript
             void KilledUnit(Unit* victim) override
             {
                 if (victim->GetTypeId() == TYPEID_PLAYER)
-                    if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
-                        mimiron->AI()->Talk(events.IsInPhase(PHASE_LEVIATHAN_SOLO) ? SAY_MKII_SLAY : SAY_V07TRON_SLAY);
+                    if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetGuidData(BOSS_MIMIRON)))
+                        mimiron->AI()->Talk(events.IsInPhase(PHASE_LEVIATHAN_MK_II) ? SAY_MKII_SLAY : SAY_V07TRON_SLAY);
             }
 
             void MovementInform(uint32 type, uint32 point) override
             {
                 if (type != POINT_MOTION_TYPE)
                     return;
-                
+
                 switch (point)
                 {
                     case WP_MKII_P1_IDLE:
                         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                         DoCast(me, SPELL_HALF_HEAL);
 
-                        if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
+                        if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetGuidData(BOSS_MIMIRON)))
                             mimiron->AI()->DoAction(DO_ACTIVATE_VX001);
                         break;
                     case WP_MKII_P4_POS_1:
@@ -800,7 +797,7 @@ class boss_leviathan_mk_ii : public CreatureScript
                         events.ScheduleEvent(EVENT_MOVE_POINT_3, 1);
                         break;
                     case WP_MKII_P4_POS_3:
-                        if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
+                        if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetGuidData(BOSS_MIMIRON)))
                             mimiron->AI()->DoAction(DO_ACTIVATE_V0L7R0N_2);
                         break;
                     case WP_MKII_P4_POS_4:
@@ -845,7 +842,7 @@ class boss_leviathan_mk_ii : public CreatureScript
             {
                 if (!UpdateVictim() || !CheckInRoom())
                     return;
-    
+
                 events.Update(diff);
 
                 if (me->HasUnitState(UNIT_STATE_CASTING))
@@ -861,10 +858,10 @@ class boss_leviathan_mk_ii : public CreatureScript
                             break;
                         case EVENT_PLASMA_BLAST:
                             DoCastVictim(SPELL_SCRIPT_EFFECT_PLASMA_BLAST);
-                            events.RescheduleEvent(EVENT_PLASMA_BLAST, urand(30000, 45000), 0, PHASE_LEVIATHAN_SOLO);
+                            events.RescheduleEvent(EVENT_PLASMA_BLAST, urand(30000, 45000), 0, PHASE_LEVIATHAN_MK_II);
 
                             if (events.GetTimeUntilEvent(EVENT_NAPALM_SHELL) < 9000)
-                                events.RescheduleEvent(EVENT_NAPALM_SHELL, 9000, 0, PHASE_LEVIATHAN_SOLO); // The actual spell is cast by the turret, we should not let it interrupt itself.
+                                events.RescheduleEvent(EVENT_NAPALM_SHELL, 9000, 0, PHASE_LEVIATHAN_MK_II); // The actual spell is cast by the turret, we should not let it interrupt itself.
                             break;
                         case EVENT_SHOCK_BLAST:
                             DoCastAOE(SPELL_SHOCK_BLAST);
@@ -872,14 +869,14 @@ class boss_leviathan_mk_ii : public CreatureScript
                             break;
                         case EVENT_FLAME_SUPPRESSANT_MK:
                             DoCastAOE(SPELL_FLAME_SUPPRESSANT_MK);
-                            events.RescheduleEvent(EVENT_FLAME_SUPPRESSANT_MK, 60000, 0, PHASE_LEVIATHAN_SOLO);
+                            events.RescheduleEvent(EVENT_FLAME_SUPPRESSANT_MK, 60000, 0, PHASE_LEVIATHAN_MK_II);
                             break;
                         case EVENT_NAPALM_SHELL:
                             DoCastAOE(SPELL_FORCE_CAST_NAPALM_SHELL);
-                            events.RescheduleEvent(EVENT_NAPALM_SHELL, urand(6000, 15000), 0, PHASE_LEVIATHAN_SOLO);
+                            events.RescheduleEvent(EVENT_NAPALM_SHELL, urand(6000, 15000), 0, PHASE_LEVIATHAN_MK_II);
 
                             if (events.GetTimeUntilEvent(EVENT_PLASMA_BLAST) < 2000)
-                                events.RescheduleEvent(EVENT_PLASMA_BLAST, 2000, 0, PHASE_LEVIATHAN_SOLO);  // The actual spell is cast by the turret, we should not let it interrupt itself.
+                                events.RescheduleEvent(EVENT_PLASMA_BLAST, 2000, 0, PHASE_LEVIATHAN_MK_II);  // The actual spell is cast by the turret, we should not let it interrupt itself.
                             break;
                         case EVENT_MOVE_POINT_2:
                             me->GetMotionMaster()->MovePoint(WP_MKII_P4_POS_2, VehicleRelocation[WP_MKII_P4_POS_2]);
@@ -893,7 +890,7 @@ class boss_leviathan_mk_ii : public CreatureScript
                         default:
                             break;
                     }
-                }                        
+                }
                 DoMeleeAttackIfReady();
             }
 
@@ -934,17 +931,17 @@ class boss_vx_001 : public CreatureScript
                     DoCast(me, SPELL_VEHICLE_DAMAGED, true);
                     me->RemoveAllAurasExceptType(SPELL_AURA_CONTROL_VEHICLE, SPELL_AURA_MOD_INCREASE_HEALTH_PERCENT);
 
-                    if (events.IsInPhase(PHASE_VX001_SOLO))
+                    if (events.IsInPhase(PHASE_VX_001))
                     {
                         me->CastStop();
                         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE); // | UNIT_FLAG_NOT_SELECTABLE);
                         DoCast(me, SPELL_HALF_HEAL); // has no effect, wat
                         DoCast(me, SPELL_TORSO_DISABLED);
-                        if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
+                        if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetGuidData(BOSS_MIMIRON)))
                             mimiron->AI()->DoAction(DO_ACTIVATE_AERIAL);
-                    }                                
-                    else if (events.IsInPhase(PHASE_VX001_ASSEMBLED))
-                    {                        
+                    }
+                    else if (events.IsInPhase(PHASE_VOL7RON))
+                    {
                         me->SetStandState(UNIT_STAND_STATE_DEAD);
                         me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
 
@@ -975,19 +972,19 @@ class boss_vx_001 : public CreatureScript
                         //me->SetUInt32Value(UNIT_FIELD_BYTES_1, 33554432); Blizzard handles hover animation like this it seems.
                         DoCast(me, SPELL_HEAT_WAVE_AURA);
 
-                        events.SetPhase(PHASE_VX001_SOLO);
+                        events.SetPhase(PHASE_VX_001);
                         events.ScheduleEvent(EVENT_ROCKET_STRIKE, 20000);
                         events.ScheduleEvent(EVENT_SPINNING_UP, urand(30000, 35000));
-                        events.ScheduleEvent(EVENT_RAPID_BURST, 500, 0, PHASE_VX001_SOLO);
+                        events.ScheduleEvent(EVENT_RAPID_BURST, 500, 0, PHASE_VX_001);
                         break;
                     case DO_ASSEMBLED_COMBAT:
                         me->SetStandState(UNIT_STAND_STATE_STAND);
                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
 
-                        events.SetPhase(PHASE_VX001_ASSEMBLED);
+                        events.SetPhase(PHASE_VOL7RON);
                         events.ScheduleEvent(EVENT_ROCKET_STRIKE, 20000);
                         events.ScheduleEvent(EVENT_SPINNING_UP, urand(30000, 35000));
-                        events.ScheduleEvent(EVENT_HAND_PULSE, 500, 0, PHASE_VX001_ASSEMBLED);
+                        events.ScheduleEvent(EVENT_HAND_PULSE, 500, 0, PHASE_VOL7RON);
                         if (_fireFighter)
                             events.ScheduleEvent(EVENT_FROST_BOMB, 1000);
                         break;
@@ -1011,10 +1008,10 @@ class boss_vx_001 : public CreatureScript
             void KilledUnit(Unit* victim) override
             {
                 if (victim->GetTypeId() == TYPEID_PLAYER)
-                    if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
-                        mimiron->AI()->Talk(events.IsInPhase(PHASE_VX001_SOLO) ? SAY_VX001_SLAY : SAY_V07TRON_SLAY);
+                    if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetGuidData(BOSS_MIMIRON)))
+                        mimiron->AI()->Talk(events.IsInPhase(PHASE_VX_001) ? SAY_VX001_SLAY : SAY_V07TRON_SLAY);
             }
-    
+
             void SpellHit(Unit* caster, SpellInfo const* /*spellProto*/) override
             {
                 if (caster->GetEntry() == NPC_BURST_TARGET && !me->HasUnitState(UNIT_STATE_CASTING))
@@ -1031,7 +1028,7 @@ class boss_vx_001 : public CreatureScript
                 // Handle rotation during SPELL_SPINNING_UP, SPELL_P3WX2_LASER_BARRAGE, SPELL_RAPID_BURST, and SPELL_HAND_PULSE_LEFT/RIGHT
                 if (me->HasUnitState(UNIT_STATE_CASTING))
                 {
-                    if (Creature* channelTarget = ObjectAccessor::GetCreature(*me, me->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT)))
+                    if (Creature* channelTarget = ObjectAccessor::GetCreature(*me, me->GetChannelObjectGuid()))
                         me->SetFacingToObject(channelTarget);
                     return;
                 }
@@ -1043,10 +1040,10 @@ class boss_vx_001 : public CreatureScript
                         case EVENT_RAPID_BURST:
                             if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 120, true))
                                 DoCast(target, SPELL_SUMMON_BURST_TARGET);
-                            events.RescheduleEvent(EVENT_RAPID_BURST, 3000, 0, PHASE_VX001_SOLO);
+                            events.RescheduleEvent(EVENT_RAPID_BURST, 3000, 0, PHASE_VX_001);
                             break;
                         case EVENT_ROCKET_STRIKE:
-                            DoCastAOE(events.IsInPhase(PHASE_VX001_SOLO) ? SPELL_ROCKET_STRIKE_LEFT : SPELL_ROCKET_STRIKE_BOTH);
+                            DoCastAOE(events.IsInPhase(PHASE_VX_001) ? SPELL_ROCKET_STRIKE_LEFT : SPELL_ROCKET_STRIKE_BOTH);
                             events.ScheduleEvent(EVENT_RELOAD, 10000);
                             events.RescheduleEvent(EVENT_ROCKET_STRIKE, urand(20000, 25000));
                             break;
@@ -1058,7 +1055,7 @@ class boss_vx_001 : public CreatureScript
                         case EVENT_HAND_PULSE:
                             if (Unit* target = SelectTarget(SELECT_TARGET_RANDOM, 0, 120, true))
                                 DoCast(target, urand(0, 1) == 0 ? SPELL_HAND_PULSE_LEFT : SPELL_HAND_PULSE_RIGHT);
-                            events.RescheduleEvent(EVENT_HAND_PULSE, urand(1500, 3000), 0, PHASE_VX001_ASSEMBLED);
+                            events.RescheduleEvent(EVENT_HAND_PULSE, urand(1500, 3000), 0, PHASE_VOL7RON);
                             break;
                         case EVENT_FROST_BOMB:
                             DoCastAOE(SPELL_SCRIPT_EFFECT_FROST_BOMB);
@@ -1071,7 +1068,7 @@ class boss_vx_001 : public CreatureScript
                             break;
                         case EVENT_FLAME_SUPPRESSANT_VX:
                             DoCastAOE(SPELL_FLAME_SUPPRESSANT_VX);
-                            events.RescheduleEvent(EVENT_FLAME_SUPPRESSANT_VX, urand(10000, 12000), 0, PHASE_VX001_SOLO);
+                            events.RescheduleEvent(EVENT_FLAME_SUPPRESSANT_VX, urand(10000, 12000), 0, PHASE_VX_001);
                             break;
                         default:
                             break;
@@ -1113,12 +1110,12 @@ class boss_aerial_command_unit : public CreatureScript
                     DoCast(me, SPELL_VEHICLE_DAMAGED, true);
                     me->RemoveAllAurasExceptType(SPELL_AURA_CONTROL_VEHICLE, SPELL_AURA_MOD_INCREASE_HEALTH_PERCENT);
 
-                    if (events.IsInPhase(PHASE_AERIAL_SOLO))
+                    if (events.IsInPhase(PHASE_AERIAL_COMMAND_UNIT))
                     {
                         me->GetMotionMaster()->Clear(true);
                         me->GetMotionMaster()->MovePoint(WP_AERIAL_P4_POS, VehicleRelocation[WP_AERIAL_P4_POS]);
                     }
-                    else if (events.IsInPhase(PHASE_AERIAL_ASSEMBLED))
+                    else if (events.IsInPhase(PHASE_VOL7RON))
                     {
                         me->SetStandState(UNIT_STAND_STATE_DEAD);
 
@@ -1139,16 +1136,16 @@ class boss_aerial_command_unit : public CreatureScript
                     case DO_HARDMODE_AERIAL:
                         fireFigther = true;
                         DoCast(me, SPELL_EMERGENCY_MODE);
-                        events.ScheduleEvent(EVENT_SUMMON_FIRE_BOTS, 1000, 0, PHASE_AERIAL_SOLO);
+                        events.ScheduleEvent(EVENT_SUMMON_FIRE_BOTS, 1000, 0, PHASE_AERIAL_COMMAND_UNIT);
                         // Missing break intended.
                     case DO_START_AERIAL:
                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                         me->SetReactState(REACT_AGGRESSIVE);
 
-                        events.SetPhase(PHASE_AERIAL_SOLO);
-                        events.ScheduleEvent(EVENT_SUMMON_JUNK_BOT, 5000, 0, PHASE_AERIAL_SOLO);
-                        events.ScheduleEvent(EVENT_SUMMON_ASSAULT_BOT, 9000, 0, PHASE_AERIAL_SOLO);
-                        events.ScheduleEvent(EVENT_SUMMON_BOMB_BOT, 9000, 0, PHASE_AERIAL_SOLO);
+                        events.SetPhase(PHASE_AERIAL_COMMAND_UNIT);
+                        events.ScheduleEvent(EVENT_SUMMON_JUNK_BOT, 5000, 0, PHASE_AERIAL_COMMAND_UNIT);
+                        events.ScheduleEvent(EVENT_SUMMON_ASSAULT_BOT, 9000, 0, PHASE_AERIAL_COMMAND_UNIT);
+                        events.ScheduleEvent(EVENT_SUMMON_BOMB_BOT, 9000, 0, PHASE_AERIAL_COMMAND_UNIT);
                         break;
                     case DO_DISABLE_AERIAL:
                         me->CastStop();
@@ -1164,7 +1161,7 @@ class boss_aerial_command_unit : public CreatureScript
                         me->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE | UNIT_FLAG_NOT_SELECTABLE);
                         me->SetReactState(REACT_AGGRESSIVE);
                         me->SetStandState(UNIT_STAND_STATE_STAND);
-                        events.SetPhase(PHASE_AERIAL_ASSEMBLED);
+                        events.SetPhase(PHASE_VOL7RON);
                         break;
                     default:
                         break;
@@ -1186,8 +1183,8 @@ class boss_aerial_command_unit : public CreatureScript
             void KilledUnit(Unit* victim) override
             {
                 if (victim->GetTypeId() == TYPEID_PLAYER)
-                    if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
-                        mimiron->AI()->Talk(events.IsInPhase(PHASE_AERIAL_SOLO) ? SAY_AERIAL_SLAY : SAY_V07TRON_SLAY);
+                    if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetGuidData(BOSS_MIMIRON)))
+                        mimiron->AI()->Talk(events.IsInPhase(PHASE_AERIAL_COMMAND_UNIT) ? SAY_AERIAL_SLAY : SAY_V07TRON_SLAY);
             }
 
             void MovementInform(uint32 type, uint32 point) override
@@ -1195,47 +1192,47 @@ class boss_aerial_command_unit : public CreatureScript
                 if (type == POINT_MOTION_TYPE && point == WP_AERIAL_P4_POS)
                 {
                     me->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
-                    
-                    if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
+
+                    if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetGuidData(BOSS_MIMIRON)))
                         mimiron->AI()->DoAction(DO_ACTIVATE_V0L7R0N_1);
                 }
             }
-    
+
             void UpdateAI(uint32 diff) override
             {
                 if (!UpdateVictim())
                     return;
-    
+
                 events.Update(diff);
-    
+
                 if (me->HasUnitState(UNIT_STATE_CASTING))
                     return;
-    
+
                 while (uint32 eventId = events.ExecuteEvent())
                 {
                     switch (eventId)
                     {
                         case EVENT_SUMMON_FIRE_BOTS:
                             me->CastCustomSpell(SPELL_SUMMON_FIRE_BOT_TRIGGER, SPELLVALUE_MAX_TARGETS, 3, NULL, true);
-                            events.RescheduleEvent(EVENT_SUMMON_FIRE_BOTS, 45000, 0, PHASE_AERIAL_SOLO);
+                            events.RescheduleEvent(EVENT_SUMMON_FIRE_BOTS, 45000, 0, PHASE_AERIAL_COMMAND_UNIT);
                             break;
                         case EVENT_SUMMON_JUNK_BOT:
                             me->CastCustomSpell(SPELL_SUMMON_JUNK_BOT_TRIGGER, SPELLVALUE_MAX_TARGETS, 1, NULL, true);
-                            events.RescheduleEvent(EVENT_SUMMON_JUNK_BOT, urand(11000, 12000), 0, PHASE_AERIAL_SOLO);
+                            events.RescheduleEvent(EVENT_SUMMON_JUNK_BOT, urand(11000, 12000), 0, PHASE_AERIAL_COMMAND_UNIT);
                             break;
                         case EVENT_SUMMON_ASSAULT_BOT:
                             me->CastCustomSpell(SPELL_SUMMON_ASSAULT_BOT_TRIGGER, SPELLVALUE_MAX_TARGETS, 1, NULL, true);
-                            events.RescheduleEvent(EVENT_SUMMON_ASSAULT_BOT, 30000, 0, PHASE_AERIAL_SOLO);
+                            events.RescheduleEvent(EVENT_SUMMON_ASSAULT_BOT, 30000, 0, PHASE_AERIAL_COMMAND_UNIT);
                             break;
                         case EVENT_SUMMON_BOMB_BOT:
                             DoCast(me, SPELL_SUMMON_BOMB_BOT);
-                            events.RescheduleEvent(EVENT_SUMMON_BOMB_BOT, urand(15000, 20000), 0, PHASE_AERIAL_SOLO);
+                            events.RescheduleEvent(EVENT_SUMMON_BOMB_BOT, urand(15000, 20000), 0, PHASE_AERIAL_COMMAND_UNIT);
                             break;
                         default:
                             break;
                     }
                 }
-                DoSpellAttackIfReady(events.IsInPhase(PHASE_AERIAL_SOLO) ? SPELL_PLASMA_BALL_P1 : SPELL_PLASMA_BALL_P2);
+                DoSpellAttackIfReady(events.IsInPhase(PHASE_AERIAL_COMMAND_UNIT) ? SPELL_PLASMA_BALL_P1 : SPELL_PLASMA_BALL_P2);
             }
 
         private:
@@ -1344,7 +1341,7 @@ class npc_mimiron_emergency_fire_bot : public CreatureScript
                 isWaterSprayReady = true;
                 moveNew = true;
             }
-    
+
             void UpdateAI(uint32 diff) override
             {
                 if (!isWaterSprayReady)
@@ -1417,7 +1414,7 @@ class npc_mimiron_computer : public CreatureScript
                     {
                         case EVENT_SELF_DESTRUCT_10:
                             Talk(SAY_SELF_DESTRUCT_10);
-                            if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
+                            if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetGuidData(BOSS_MIMIRON)))
                                 mimiron->AI()->DoAction(DO_ACTIVATE_HARD_MODE);
                             events.ScheduleEvent(EVENT_SELF_DESTRUCT_9, 60000);
                             break;
@@ -1459,7 +1456,7 @@ class npc_mimiron_computer : public CreatureScript
                             break;
                         case EVENT_SELF_DESTRUCT_FINALIZED:
                             Talk(SAY_SELF_DESTRUCT_FINALIZED);
-                            if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetData64(BOSS_MIMIRON)))
+                            if (Creature* mimiron = ObjectAccessor::GetCreature(*me, instance->GetGuidData(BOSS_MIMIRON)))
                                 mimiron->AI()->DoAction(DO_ACTIVATE_SELF_DESTRUCT);
                             DoCast(me, SPELL_SELF_DESTRUCTION_AURA);
                             DoCast(me, SPELL_SELF_DESTRUCTION_VISUAL);
@@ -1497,7 +1494,7 @@ class npc_mimiron_flames : public CreatureScript
             {
                 events.ScheduleEvent(EVENT_SPREAD_FLAMES, 4000);
             }
-    
+
             void UpdateAI(uint32 diff) override
             {
                 if (instance->GetBossState(BOSS_MIMIRON) != IN_PROGRESS)
@@ -1544,7 +1541,7 @@ class npc_mimiron_frost_bomb : public CreatureScript
             {
                 events.ScheduleEvent(EVENT_FROST_BOMB_EXPLOSION, 10000);
             }
-    
+
             void UpdateAI(uint32 diff) override
             {
                 events.Update(diff);
@@ -1592,7 +1589,7 @@ class npc_mimiron_proximity_mine : public CreatureScript
             {
                 events.ScheduleEvent(EVENT_PROXIMITY_MINE_ARM, 1500);
             }
-    
+
             void UpdateAI(uint32 diff) override
             {
                 events.Update(diff);
@@ -1630,15 +1627,14 @@ class go_mimiron_hardmode_button : public GameObjectScript
 {
     public:
         go_mimiron_hardmode_button() : GameObjectScript("go_mimiron_hardmode_button") { }
-    
+
         bool OnGossipHello(Player* /*player*/, GameObject* go)
         {
             InstanceScript* instance = go->GetInstanceScript();
-    
             if (!instance)
                 return false;
-    
-            if (Creature* computer = ObjectAccessor::GetCreature(*go, instance->GetData64(DATA_COMPUTER)))
+
+            if (Creature* computer = ObjectAccessor::GetCreature(*go, instance->GetGuidData(DATA_COMPUTER)))
                 computer->AI()->DoAction(DO_ACTIVATE_COMPUTER);
             go->SetGoState(GO_STATE_ACTIVE);
             go->SetFlag(GAMEOBJECT_FLAGS, GO_FLAG_NOT_SELECTABLE);
@@ -1646,7 +1642,7 @@ class go_mimiron_hardmode_button : public GameObjectScript
         }
 };
 
-// 63801 Bomb Bot
+// 63801 - Bomb Bot
 class spell_mimiron_bomb_bot : public SpellScriptLoader
 {
     public:
@@ -1658,9 +1654,9 @@ class spell_mimiron_bomb_bot : public SpellScriptLoader
 
             void HandleScript(SpellEffIndex /*effIndex*/)
             {
-                if (GetHitPlayer()) 
+                if (GetHitPlayer())
                     if (InstanceScript* instance = GetCaster()->GetInstanceScript())
-                        if (Creature* mkii = ObjectAccessor::GetCreature(*GetCaster(), instance->GetData64(DATA_LEVIATHAN_MK_II)))
+                        if (Creature* mkii = ObjectAccessor::GetCreature(*GetCaster(), instance->GetGuidData(DATA_LEVIATHAN_MK_II)))
                             mkii->AI()->SetData(DATA_SETUP_BOMB, 0);
             }
 
@@ -1747,21 +1743,22 @@ class spell_mimiron_fire_search : public SpellScriptLoader
 {
     public:
         spell_mimiron_fire_search() : SpellScriptLoader("spell_mimiron_fire_search") { }
-    
+
         class spell_mimiron_fire_search_SpellScript : public SpellScript
         {
             PrepareSpellScript(spell_mimiron_fire_search_SpellScript);
-            
+
+        public:
+            spell_mimiron_fire_search_SpellScript()
+            {
+                _noTarget = false;
+            }
+
+        private:
             bool Validate(SpellInfo const* /*spell*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_WATER_SPRAY))
-                    return false; 
-                return true;
-            }
-
-            bool Load() override
-            {
-                _noTarget = false;
+                    return false;
                 return true;
             }
 
@@ -1781,7 +1778,7 @@ class spell_mimiron_fire_search : public SpellScriptLoader
                 if (_noTarget)
                     GetCaster()->GetMotionMaster()->MoveRandom(15.0f);
             }
- 
+
             void HandleScript(SpellEffIndex /*effIndex*/)
             {
                 Unit* caster = GetCaster();
@@ -1812,7 +1809,7 @@ class spell_mimiron_fire_search : public SpellScriptLoader
         private:
             bool _noTarget;
         };
-    
+
         SpellScript* GetSpellScript() const override
         {
             return new spell_mimiron_fire_search_SpellScript();
@@ -1852,7 +1849,7 @@ class spell_mimiron_magnetic_core : public SpellScriptLoader
             bool Validate(SpellInfo const* /*spell*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_MAGNETIC_CORE_VISUAL))
-                    return false; 
+                    return false;
                 return true;
             }
 
@@ -1860,7 +1857,7 @@ class spell_mimiron_magnetic_core : public SpellScriptLoader
             {
                 if (Creature* target = GetTarget()->ToCreature())
                 {
-                    target->GetAI()->DoAction(DO_DISABLE_AERIAL);
+                    target->AI()->DoAction(DO_DISABLE_AERIAL);
                     target->CastSpell(target, SPELL_MAGNETIC_CORE_VISUAL, true);
                 }
             }
@@ -1869,7 +1866,7 @@ class spell_mimiron_magnetic_core : public SpellScriptLoader
             {
                 if (Creature* target = GetTarget()->ToCreature())
                 {
-                    target->GetAI()->DoAction(DO_ENABLE_AERIAL);
+                    target->AI()->DoAction(DO_ENABLE_AERIAL);
                     target->RemoveAurasDueToSpell(SPELL_MAGNETIC_CORE_VISUAL);
                 }
             }
@@ -1907,7 +1904,7 @@ class spell_mimiron_napalm_shell : public SpellScriptLoader
             bool Validate(SpellInfo const* /*spell*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_NAPALM_SHELL))
-                    return false; 
+                    return false;
                 return true;
             }
 
@@ -1957,7 +1954,7 @@ class spell_mimiron_p3wx2_laser_barrage : public SpellScriptLoader
 
             void OnHit(SpellEffIndex /*effIndex*/)
             {
-                GetCaster()->SetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT, GetHitUnit()->GetGUID());
+                GetCaster()->SetChannelObjectGuid(GetHitUnit()->GetGUID());
             }
 
             void Register() override
@@ -1985,7 +1982,7 @@ class spell_mimiron_plasma_blast : public SpellScriptLoader
             bool Validate(SpellInfo const* /*spell*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_PLASMA_BLAST))
-                    return false; 
+                    return false;
                 return true;
             }
 
@@ -2023,15 +2020,15 @@ class spell_mimiron_proximity_explosion : public SpellScriptLoader
             PrepareSpellScript(spell_mimiron_proximity_explosion_SpellScript);
 
             void OnHit(SpellEffIndex /*effIndex*/)
-            {                
+            {
                 if (GetHitPlayer())
                     if (InstanceScript* instance = GetCaster()->GetInstanceScript())
-                        if (Creature* mkII = ObjectAccessor::GetCreature(*GetCaster(), instance->GetData64(DATA_LEVIATHAN_MK_II)))
+                        if (Creature* mkII = ObjectAccessor::GetCreature(*GetCaster(), instance->GetGuidData(DATA_LEVIATHAN_MK_II)))
                             mkII->AI()->SetData(DATA_SETUP_MINE, 0);
             }
 
             void HandleAura(SpellEffIndex /*effIndex*/)
-            {                
+            {
                 GetCaster()->RemoveAurasDueToSpell(SPELL_PROXIMITY_MINE_PERIODIC_TRIGGER);
             }
 
@@ -2181,7 +2178,7 @@ class spell_mimiron_rocket_strike : public SpellScriptLoader
             bool Validate(SpellInfo const* /*spell*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_SCRIPT_EFFECT_ROCKET_STRIKE))
-                    return false; 
+                    return false;
                 return true;
             }
 
@@ -2229,7 +2226,7 @@ class spell_mimiron_rocket_strike_damage : public SpellScriptLoader
             bool Validate(SpellInfo const* /*spell*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_NOT_SO_FRIENDLY_FIRE))
-                    return false; 
+                    return false;
                 return true;
             }
 
@@ -2241,9 +2238,9 @@ class spell_mimiron_rocket_strike_damage : public SpellScriptLoader
 
             void HandleScript(SpellEffIndex /*effIndex*/)
             {
-                if (GetHitPlayer()) 
+                if (GetHitPlayer())
                     if (InstanceScript* instance = GetCaster()->GetInstanceScript())
-                        if (Creature* mkii = ObjectAccessor::GetCreature(*GetCaster(), instance->GetData64(DATA_LEVIATHAN_MK_II)))
+                        if (Creature* mkii = ObjectAccessor::GetCreature(*GetCaster(), instance->GetGuidData(DATA_LEVIATHAN_MK_II)))
                             mkii->AI()->SetData(DATA_SETUP_ROCKET, 0);
             }
 
@@ -2279,7 +2276,7 @@ class spell_mimiron_rocket_strike_target_select : public SpellScriptLoader
             bool Validate(SpellInfo const* /*spell*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_SUMMON_ROCKET_STRIKE))
-                    return false; 
+                    return false;
                 return true;
             }
 
@@ -2302,7 +2299,7 @@ class spell_mimiron_rocket_strike_target_select : public SpellScriptLoader
             void HandleScript(SpellEffIndex /*effIndex*/)
             {
                 if (InstanceScript* instance = GetCaster()->GetInstanceScript())
-                    GetCaster()->CastSpell(GetHitUnit(), SPELL_SUMMON_ROCKET_STRIKE, true, NULL, NULL, instance->GetData64(DATA_VX_001));
+                    GetCaster()->CastSpell(GetHitUnit(), SPELL_SUMMON_ROCKET_STRIKE, true, NULL, NULL, instance->GetGuidData(DATA_VX_001));
                 GetCaster()->SetDisplayId(11686);
             }
 
@@ -2361,7 +2358,7 @@ class spell_mimiron_spinning_up : public SpellScriptLoader
             void OnHit(SpellEffIndex /*effIndex*/)
             {
                 if (GetHitUnit() != GetCaster())
-                    GetCaster()->SetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT, GetHitUnit()->GetGUID());
+                    GetCaster()->SetChannelObjectGuid(GetHitUnit()->GetGUID());
             }
 
             void Register() override
@@ -2389,7 +2386,7 @@ class spell_mimiron_summon_assault_bot : public SpellScriptLoader
             bool Validate(SpellInfo const* /*spell*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_SUMMON_ASSAULT_BOT))
-                    return false; 
+                    return false;
                 return true;
             }
 
@@ -2398,7 +2395,7 @@ class spell_mimiron_summon_assault_bot : public SpellScriptLoader
                 if (Unit* caster = GetCaster())
                     if (InstanceScript* instance = caster->GetInstanceScript())
                         if (instance->GetBossState(BOSS_MIMIRON) == IN_PROGRESS)
-                            caster->CastSpell(caster, SPELL_SUMMON_ASSAULT_BOT, false, NULL, aurEff, instance->GetData64(DATA_AERIAL_COMMAND_UNIT));
+                            caster->CastSpell(caster, SPELL_SUMMON_ASSAULT_BOT, false, NULL, aurEff, instance->GetGuidData(DATA_AERIAL_COMMAND_UNIT));
             }
 
             void Register() override
@@ -2426,7 +2423,7 @@ class spell_mimiron_summon_assault_bot_target : public SpellScriptLoader
             bool Validate(SpellInfo const* /*spell*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_SUMMON_ASSAULT_BOT_DUMMY))
-                    return false; 
+                    return false;
                 return true;
             }
 
@@ -2470,7 +2467,7 @@ class spell_mimiron_summon_fire_bot : public SpellScriptLoader
                 if (Unit* caster = GetCaster())
                     if (InstanceScript* instance = caster->GetInstanceScript())
                         if (instance->GetBossState(BOSS_MIMIRON) == IN_PROGRESS)
-                            caster->CastSpell(caster, SPELL_SUMMON_FIRE_BOT, false, NULL, aurEff, instance->GetData64(DATA_AERIAL_COMMAND_UNIT));
+                            caster->CastSpell(caster, SPELL_SUMMON_FIRE_BOT, false, NULL, aurEff, instance->GetGuidData(DATA_AERIAL_COMMAND_UNIT));
             }
 
             void Register() override
@@ -2498,7 +2495,7 @@ class spell_mimiron_summon_fire_bot_target : public SpellScriptLoader
             bool Validate(SpellInfo const* /*spell*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_SUMMON_FIRE_BOT_DUMMY))
-                    return false; 
+                    return false;
                 return true;
             }
 
@@ -2524,7 +2521,7 @@ class spell_mimiron_summon_flames_spread : public SpellScriptLoader
 {
     public:
         spell_mimiron_summon_flames_spread() : SpellScriptLoader("spell_mimiron_summon_flames_spread") { }
- 
+
         class spell_mimiron_summon_flames_spread_SpellScript : public SpellScript
         {
             PrepareSpellScript(spell_mimiron_summon_flames_spread_SpellScript);
@@ -2546,7 +2543,7 @@ class spell_mimiron_summon_flames_spread : public SpellScriptLoader
             }
 
             void OnHit(SpellEffIndex /*effIndex*/)
-            {                
+            {
                 GetCaster()->SetInFront(GetHitUnit());
             }
 
@@ -2569,7 +2566,7 @@ class spell_mimiron_summon_flames_spread : public SpellScriptLoader
             bool Validate(SpellInfo const* /*spell*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_SUMMON_FLAMES_SPREAD))
-                    return false; 
+                    return false;
                 return true;
             }
 
@@ -2606,7 +2603,7 @@ class spell_mimiron_summon_frost_bomb_target : public SpellScriptLoader
             bool Validate(SpellInfo const* /*spell*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_SUMMON_FROST_BOMB))
-                    return false; 
+                    return false;
                 return true;
             }
 
@@ -2657,7 +2654,7 @@ class spell_mimiron_summon_junk_bot : public SpellScriptLoader
             bool Validate(SpellInfo const* /*spell*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_SUMMON_JUNK_BOT))
-                    return false; 
+                    return false;
                 return true;
             }
 
@@ -2666,7 +2663,7 @@ class spell_mimiron_summon_junk_bot : public SpellScriptLoader
                 if (Unit* caster = GetCaster())
                     if (InstanceScript* instance = caster->GetInstanceScript())
                         if (instance->GetBossState(BOSS_MIMIRON) == IN_PROGRESS)
-                            caster->CastSpell(caster, SPELL_SUMMON_JUNK_BOT, false, NULL, aurEff, instance->GetData64(DATA_AERIAL_COMMAND_UNIT));
+                            caster->CastSpell(caster, SPELL_SUMMON_JUNK_BOT, false, NULL, aurEff, instance->GetGuidData(DATA_AERIAL_COMMAND_UNIT));
             }
 
             void Register() override
@@ -2694,7 +2691,7 @@ class spell_mimiron_summon_junk_bot_target : public SpellScriptLoader
             bool Validate(SpellInfo const* /*spell*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_SUMMON_JUNK_BOT_DUMMY))
-                    return false; 
+                    return false;
                 return true;
             }
 

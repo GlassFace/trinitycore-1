@@ -37,11 +37,6 @@ class Player;
 class SpellInfo;
 class WorldSession;
 
-// npcbot
-class bot_ai;
-class bot_minion_ai;
-class bot_pet_ai;
-
 enum CreatureFlagsExtra
 {
     CREATURE_FLAG_EXTRA_INSTANCE_BIND       = 0x00000001,       // creature kill bind instance with killer and killer's group
@@ -75,7 +70,6 @@ enum CreatureFlagsExtra
 #define MAX_KILL_CREDIT 2
 #define MAX_CREATURE_MODELS 4
 #define MAX_CREATURE_QUEST_ITEMS 6
-
 #define CREATURE_MAX_SPELLS 8
 
 // from `creature_template` table
@@ -560,11 +554,11 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
         void StartPickPocketRefillTimer();
         void ResetPickPocketRefillTimer() { _pickpocketLootRestore = 0; }
         bool CanGeneratePickPocketLoot() const { return _pickpocketLootRestore <= time(NULL); }
-        void SetSkinner(uint64 guid) { _skinner = guid; }
-        uint64 GetSkinner() const { return _skinner; } // Returns the player who skinned this creature
+        void SetSkinner(ObjectGuid guid) { _skinner = guid; }
+        ObjectGuid GetSkinner() const { return _skinner; } // Returns the player who skinned this creature
         Player* GetLootRecipient() const;
         Group* GetLootRecipientGroup() const;
-        bool hasLootRecipient() const { return m_lootRecipient || m_lootRecipientGroup; }
+        bool hasLootRecipient() const { return !m_lootRecipient.IsEmpty() || m_lootRecipientGroup; }
         bool isTappedBy(Player const* player) const;                          // return true if the creature is tapped by the player or a member of his party.
 
         void SetLootRecipient (Unit* unit);
@@ -677,54 +671,12 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
 
         float m_SightDistance, m_CombatDistance;
 
-        void FarTeleportTo(Map* map, float X, float Y, float Z, float O);
-
         bool m_isTempWorldObject; //true when possessed
 
         // Handling caster facing during spellcast
-        void SetTarget(uint64 guid) override;
+        void SetTarget(ObjectGuid guid) override;
         void FocusTarget(Spell const* focusSpell, WorldObject const* target);
         void ReleaseFocus(Spell const* focusSpell);
-
-        //Bot commands
-        Player* GetBotOwner() const { return m_bot_owner; }
-        void SetBotOwner(Player* newowner) { m_bot_owner = newowner; }
-        Creature* GetCreatureOwner() const { return m_creature_owner; }
-        void SetCreatureOwner(Creature* newCreOwner) { m_creature_owner = newCreOwner; }
-        Creature* GetBotsPet() const { return m_bots_pet; }
-        void SetBotsPetDied();
-        void SetBotsPet(Creature* newpet) { /*ASSERT (!m_bots_pet);*/ m_bots_pet = newpet; }
-        void SetIAmABot(bool bot = true);
-        bool GetIAmABot() const;
-        bool GetIAmABotsPet() const;
-        void SetBotClass(uint8 myclass) { m_bot_class = myclass; }
-        uint8 GetBotClass() const;
-        uint8 GetBotRoles() const;
-        bot_ai* GetBotAI() const { return bot_AI; }
-        bot_minion_ai* GetBotMinionAI() const;
-        bot_pet_ai* GetBotPetAI() const;
-        void InitBotAI(bool asPet = false);
-        void SetBotCommandState(CommandStates st, bool force = false);
-        CommandStates GetBotCommandState() const;
-        void ApplyBotDamageMultiplierMelee(uint32& damage, CalcDamageInfo& damageinfo) const;
-        void ApplyBotDamageMultiplierMelee(int32& damage, SpellNonMeleeDamage& damageinfo, SpellInfo const* spellInfo, WeaponAttackType attackType, bool& crit) const;
-        void ApplyBotDamageMultiplierSpell(int32& damage, SpellNonMeleeDamage& damageinfo, SpellInfo const* spellInfo, WeaponAttackType attackType, bool& crit) const;
-        void ApplyBotDamageMultiplierEffect(SpellInfo const* spellInfo, uint8 effect_index, float &value) const;
-        void SetBotShouldUpdateStats();
-        void OnBotSummon(Creature* summon);
-        void OnBotDespawn(Creature* summon);
-        void SetCanUpdate(bool can) { m_canUpdate = can; }
-        void RemoveBotItemBonuses(uint8 slot);
-        void ApplyBotItemBonuses(uint8 slot);
-        bool CanUseOffHand() const;
-        bool CanUseRanged() const;
-        bool CanEquip(ItemTemplate const* item, uint8 slot) const;
-        bool Unequip(uint8 slot) const;
-        bool Equip(uint32 itemId, uint8 slot) const;
-        bool ResetEquipment(uint8 slot) const;
-        //advanced
-        bool IsQuestBot() const;
-        //End Bot commands
 
     protected:
         bool CreateFromProto(uint32 guidlow, uint32 entry, CreatureData const* data = nullptr, uint32 vehId = 0);
@@ -735,9 +687,9 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
 
         static float _GetHealthMod(int32 Rank);
 
-        uint64 m_lootRecipient;
+        ObjectGuid m_lootRecipient;
         uint32 m_lootRecipientGroup;
-        uint64 _skinner;
+        ObjectGuid _skinner;
 
         /// Timers
         time_t _pickpocketLootRestore;
@@ -778,15 +730,6 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
         bool CanAlwaysSee(WorldObject const* obj) const override;
 
     private:
-        //bot system
-        Player* m_bot_owner;
-        Creature* m_creature_owner;
-        Creature* m_bots_pet;
-        bot_ai* bot_AI;
-        uint8 m_bot_class;
-        bool m_canUpdate;
-        //end bot system
-
         void ForcedDespawn(uint32 timeMSToDespawn = 0);
 
         //WaypointMovementGenerator vars
@@ -803,15 +746,15 @@ class Creature : public Unit, public GridObject<Creature>, public MapObject
 class AssistDelayEvent : public BasicEvent
 {
     public:
-        AssistDelayEvent(uint64 victim, Unit& owner) : BasicEvent(), m_victim(victim), m_owner(owner) { }
+        AssistDelayEvent(ObjectGuid victim, Unit& owner) : BasicEvent(), m_victim(victim), m_owner(owner) { }
 
         bool Execute(uint64 e_time, uint32 p_time) override;
-        void AddAssistant(uint64 guid) { m_assistants.push_back(guid); }
+        void AddAssistant(ObjectGuid guid) { m_assistants.push_back(guid); }
     private:
         AssistDelayEvent();
 
-        uint64            m_victim;
-        std::list<uint64> m_assistants;
+        ObjectGuid        m_victim;
+        GuidList          m_assistants;
         Unit&             m_owner;
 };
 

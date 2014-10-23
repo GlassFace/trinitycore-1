@@ -42,7 +42,7 @@ class InstanceScript;
 class SummonList
 {
 public:
-    typedef std::list<uint64> StorageType;
+    typedef GuidList StorageType;
     typedef StorageType::iterator iterator;
     void DoAction(uint32 entry, int32 info);
     typedef StorageType::const_iterator const_iterator;
@@ -107,7 +107,7 @@ public:
     {
         // We need to use a copy of SummonList here, otherwise original SummonList would be modified
         StorageType listCopy = storage_;
-        Trinity::Containers::RandomResizeList<uint64, Predicate>(listCopy, predicate, max);
+        Trinity::Containers::RandomResizeList<ObjectGuid, Predicate>(listCopy, predicate, max);
         for (StorageType::iterator i = listCopy.begin(); i != listCopy.end(); )
         {
             Creature* summon = ObjectAccessor::GetCreature(*me, *i++);
@@ -129,7 +129,7 @@ class EntryCheckPredicate
 {
     public:
         EntryCheckPredicate(uint32 entry) : _entry(entry) { }
-        bool operator()(uint64 guid) { return GUID_ENPART(guid) == _entry; }
+        bool operator()(ObjectGuid guid) { return guid.GetEntry() == _entry; }
 
     private:
         uint32 _entry;
@@ -138,7 +138,7 @@ class EntryCheckPredicate
 class DummyEntryCheckPredicate
 {
     public:
-        bool operator()(uint64) { return true; }
+        bool operator()(ObjectGuid) { return true; }
 };
 
 struct ScriptedAI : public CreatureAI

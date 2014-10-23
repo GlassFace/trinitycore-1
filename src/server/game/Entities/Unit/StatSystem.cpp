@@ -25,7 +25,6 @@
 #include "SpellAuraEffects.h"
 #include "SpellMgr.h"
 #include "World.h"
-#include "WorldSession.h"
 
 inline bool _ModifyUInt32(bool apply, uint32& baseValue, int32& amount)
 {
@@ -217,10 +216,6 @@ bool Player::UpdateAllStats()
     UpdateExpertise(OFF_ATTACK);
     RecalculateRating(CR_ARMOR_PENETRATION);
     UpdateAllResistances();
-
-    for (uint8 i = 0; i != GetMaxNpcBots(); ++i)
-        if (Creature* bot = GetBotMap(i)->_Cre())
-            bot->SetBotShouldUpdateStats();
 
     return true;
 }

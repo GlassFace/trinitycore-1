@@ -263,6 +263,13 @@ class spell_pri_guardian_spirit : public SpellScriptLoader
         {
             PrepareAuraScript(spell_pri_guardian_spirit_AuraScript);
 
+        public:
+            spell_pri_guardian_spirit_AuraScript()
+            {
+                healPct = 0;
+            }
+
+        private:
             uint32 healPct;
 
             bool Validate(SpellInfo const* /*spellInfo*/) override
@@ -451,16 +458,17 @@ class spell_pri_mana_leech : public SpellScriptLoader
         {
             PrepareAuraScript(spell_pri_mana_leech_AuraScript);
 
+        public:
+            spell_pri_mana_leech_AuraScript()
+            {
+                _procTarget = nullptr;
+            }
+
+        private:
             bool Validate(SpellInfo const* /*spellInfo*/) override
             {
                 if (!sSpellMgr->GetSpellInfo(SPELL_PRIEST_MANA_LEECH_PROC))
                     return false;
-                return true;
-            }
-
-            bool Load() override
-            {
-                _procTarget = NULL;
                 return true;
             }
 
@@ -504,7 +512,7 @@ class spell_pri_mind_sear : public SpellScriptLoader
 
             void FilterTargets(std::list<WorldObject*>& unitList)
             {
-                unitList.remove_if(Trinity::ObjectGUIDCheck(GetCaster()->GetUInt64Value(UNIT_FIELD_CHANNEL_OBJECT)));
+                unitList.remove_if(Trinity::ObjectGUIDCheck(GetCaster()->GetChannelObjectGuid()));
             }
 
             void Register() override
@@ -568,7 +576,6 @@ class spell_pri_penance : public SpellScriptLoader
 
             bool Load() override
             {
-                if (GetCaster() && GetCaster()->GetTypeId() == TYPEID_UNIT && GetCaster()->ToCreature()->GetIAmABot()) return true;
                 return GetCaster()->GetTypeId() == TYPEID_PLAYER;
             }
 
@@ -611,8 +618,6 @@ class spell_pri_penance : public SpellScriptLoader
             SpellCastResult CheckCast()
             {
                 Player* caster = GetCaster()->ToPlayer();
-                if (!caster && GetCaster()->GetTypeId() == TYPEID_UNIT && GetCaster()->ToCreature()->GetIAmABot())
-                    caster = (Player*)GetCaster();
                 if (Unit* target = GetExplTargetUnit())
                     if (!caster->IsFriendlyTo(target) && !caster->IsValidAttackTarget(target))
                         return SPELL_FAILED_BAD_TARGETS;
@@ -754,7 +759,6 @@ class spell_pri_renew : public SpellScriptLoader
 
             bool Load() override
             {
-                if (GetCaster() && GetCaster()->GetTypeId() == TYPEID_UNIT && GetCaster()->ToCreature()->GetIAmABot()) return true;
                 return GetCaster() && GetCaster()->GetTypeId() == TYPEID_PLAYER;
             }
 

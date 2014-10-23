@@ -188,15 +188,6 @@ namespace Trinity
                 gain = uint32(gain * xpMod);
             }
 
-            if (player->GetNpcBotsCount() > 1)
-            gain = uint32(gain / player->GetNpcBotsCount());
-
-            uint8 jilv = rand()%99+1;
-			uint8 baoji = rand() % 3 + 2;
-            if (jilv >= 70) {
-				gain = gain * baoji;
-            }
-
             sScriptMgr->OnGainCalculation(gain, player, u);
             return gain;
         }

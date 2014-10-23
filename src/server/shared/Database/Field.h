@@ -255,6 +255,7 @@ class Field
         {
             return data.type;
         }
+
     protected:
         Field();
         ~Field();
