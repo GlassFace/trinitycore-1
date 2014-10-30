@@ -93,9 +93,9 @@ LogsDir = ""
 #                     "127.0.0.1;3306;trinity;trinity;world"      - (WorldDatabaseInfo)
 #                     "127.0.0.1;3306;trinity;trinity;characters" - (CharacterDatabaseInfo)
 
-LoginDatabaseInfo     = "127.0.0.1;3306;trinity;trinity;auth"
-WorldDatabaseInfo     = "127.0.0.1;3306;trinity;trinity;world"
-CharacterDatabaseInfo = "127.0.0.1;3306;trinity;trinity;characters"
+LoginDatabaseInfo     = "127.0.0.1;3306;root;root;auth"
+WorldDatabaseInfo     = "127.0.0.1;3306;root;root;world1"
+CharacterDatabaseInfo = "127.0.0.1;3306;root;root;characters"
 
 #
 #    LoginDatabase.WorkerThreads
@@ -172,7 +172,7 @@ ThreadPool = 2
 #        Default:     0  - (Selected by OS)
 #                     1+ - (Bit mask value of selected processors)
 
-UseProcessors = 0
+UseProcessors = 8
 
 #
 #    ProcessPriority
@@ -269,9 +269,9 @@ ChangeWeatherInterval = 600000
 #
 #    PlayerSaveInterval
 #        Description: Time (in milliseconds) for player save interval.
-#        Default:     90000 - (90 seconds)
+#        Default:     900000 - (15 min)
 
-PlayerSaveInterval = 90000
+PlayerSaveInterval = 10000
 
 #
 #    PlayerSave.Stats.MinLevel
@@ -279,7 +279,7 @@ PlayerSaveInterval = 90000
 #        Default:     0  - (Disabled, Do not save character stats)
 #                     1+ - (Enabled, Level beyond which character stats are saved)
 
-PlayerSave.Stats.MinLevel = 0
+PlayerSave.Stats.MinLevel = 1
 
 #
 #    PlayerSave.Stats.SaveOnlyOnLogout
@@ -291,11 +291,11 @@ PlayerSave.Stats.SaveOnlyOnLogout = 1
 
 #
 #    mmap.enablePathFinding
-#        Description: Enable/Disable pathfinding using mmaps - recommended.
+#        Description: Enable/Disable pathfinding using mmaps - experimental.
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-mmap.enablePathFinding = 0
+mmap.enablePathFinding = 1
 
 #
 #    vmap.enableLOS
@@ -722,7 +722,7 @@ StartPlayerMoney = 0
 #        Description: Maximum honor points a character can have.
 #        Default:     75000
 
-MaxHonorPoints = 75000
+MaxHonorPoints = 210000000
 
 #
 #    StartHonorPoints
@@ -736,7 +736,7 @@ StartHonorPoints = 0
 #        Description: Maximum arena points a character can have.
 #        Default:     10000
 
-MaxArenaPoints = 10000
+MaxArenaPoints = 210000000
 
 #
 #    StartArenaPoints
@@ -829,7 +829,7 @@ Instance.IgnoreLevel = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-Instance.IgnoreRaid = 0
+Instance.IgnoreRaid = 1
 
 #
 #    Instance.ResetTimeHour
@@ -837,7 +837,7 @@ Instance.IgnoreRaid = 0
 #        Range:       0-23
 #        Default:     4 - (04:00 AM)
 
-Instance.ResetTimeHour = 4
+Instance.ResetTimeHour = 16
 
 #
 #    Instance.UnloadDelay
@@ -847,7 +847,7 @@ Instance.ResetTimeHour = 4
 #                     0       - (Disabled, Instance maps are kept in memory until the instance
 #                               resets)
 
-Instance.UnloadDelay = 1800000
+Instance.UnloadDelay = 0
 
 #
 #    InstancesResetAnnounce
@@ -891,7 +891,7 @@ Quests.HighLevelHideDiff = 7
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-Quests.IgnoreRaid = 0
+Quests.IgnoreRaid = 1
 
 #
 #    Quests.IgnoreAutoAccept
@@ -942,7 +942,7 @@ Guild.BankEventLogRecordsCount = 25
 #        Range:       0-10
 #        Default:     2
 
-MaxPrimaryTradeSkill = 2
+MaxPrimaryTradeSkill = 10
 
 #
 #    MinPetitionSigns
@@ -950,7 +950,7 @@ MaxPrimaryTradeSkill = 2
 #        Range:       0-9
 #        Default:     9
 
-MinPetitionSigns = 9
+MinPetitionSigns = 0
 
 #
 #    MaxGroupXPDistance
@@ -958,7 +958,7 @@ MinPetitionSigns = 9
 #                     death.
 #        Default:     74
 
-MaxGroupXPDistance = 74
+MaxGroupXPDistance = 2000
 
 #
 #    MaxRecruitAFriendBonusDistance
@@ -973,7 +973,7 @@ MaxRecruitAFriendBonusDistance = 100
 #        Description: Time (in seconds) mail delivery is delayed when sending items.
 #        Default:     3600 - (1 hour)
 
-MailDeliveryDelay = 3600
+MailDeliveryDelay = 1
 
 #
 #    SkillChance.Prospecting
@@ -1179,7 +1179,7 @@ Warden.BanDuration = 86400
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Calendar = 0
+AllowTwoSide.Interaction.Calendar = 1
 
 #
 #    AllowTwoSide.Interaction.Channel
@@ -1187,7 +1187,7 @@ AllowTwoSide.Interaction.Calendar = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Channel = 0
+AllowTwoSide.Interaction.Channel = 1
 
 #
 #    AllowTwoSide.Interaction.Group
@@ -1195,7 +1195,7 @@ AllowTwoSide.Interaction.Channel = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Group = 0
+AllowTwoSide.Interaction.Group = 1
 
 #
 #    AllowTwoSide.Interaction.Guild
@@ -1203,7 +1203,7 @@ AllowTwoSide.Interaction.Group = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Guild = 0
+AllowTwoSide.Interaction.Guild = 1
 
 #
 #    AllowTwoSide.Interaction.Auction
@@ -1211,7 +1211,7 @@ AllowTwoSide.Interaction.Guild = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Auction = 0
+AllowTwoSide.Interaction.Auction = 1
 
 #
 #    AllowTwoSide.Trade
@@ -1219,7 +1219,7 @@ AllowTwoSide.Interaction.Auction = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Trade = 0
+AllowTwoSide.Trade = 1
 
 #
 #    TalentsInspecting
@@ -1646,8 +1646,8 @@ Visibility.GroupMode = 1
 #                     170 - (Visibility.Distance.Instances)
 #                     533 - (Visibility.Distance.BGArenas)
 
-Visibility.Distance.Continents = 90
-Visibility.Distance.Instances = 170
+Visibility.Distance.Continents = 250
+Visibility.Distance.Instances = 533
 Visibility.Distance.BGArenas = 533
 
 #
@@ -1821,14 +1821,14 @@ Rate.Honor = 1
 #        Description: Talent point rate.
 #        Default:     1
 
-Rate.Talent = 1
+Rate.Talent = 2
 
 #
 #    Rate.Reputation.Gain
 #        Description: Reputation gain rate.
 #        Default:     1
 
-Rate.Reputation.Gain = 1
+Rate.Reputation.Gain = 2
 
 #
 #    Rate.Reputation.LowLevel.Kill
@@ -1856,7 +1856,7 @@ Rate.Reputation.RecruitAFriendBonus = 0.1
 #        Description: Movement speed rate.
 #        Default:     1
 
-Rate.MoveSpeed = 1
+Rate.MoveSpeed = 1.5
 
 #
 #    Rate.InstanceResetTime
@@ -1866,7 +1866,7 @@ Rate.MoveSpeed = 1
 #                     characters db in order to let new values work.
 #        Default:     1
 
-Rate.InstanceResetTime = 1
+Rate.InstanceResetTime = 0.2857142857142857
 
 #
 #    SkillGain.Crafting
@@ -1897,7 +1897,7 @@ SkillGain.Weapon    = 1
 
 SkillChance.Orange = 100
 SkillChance.Yellow = 75
-SkillChance.Green  = 25
+SkillChance.Green  = 50
 SkillChance.Grey   = 0
 
 #
@@ -1996,7 +1996,7 @@ Death.Bones.BattlegroundOrArena = 1
 #        Default:     1 - (Enabled)
 #                     0 - (Disabled)
 
-Die.Command.Mode = 1
+Die.Command.Mode = 0
 
 #
 ###################################################################################################
@@ -2045,9 +2045,9 @@ AutoBroadcast.Center = 0
 #
 #    AutoBroadcast.Timer
 #        Description: Timer (in milliseconds) for auto broadcasts.
-#        Default:     60000 - (10 minutes)
+#        Default:     60000 - (60 seconds)
 
-AutoBroadcast.Timer = 600000
+AutoBroadcast.Timer = 60000
 
 #
 ###################################################################################################
@@ -2068,7 +2068,7 @@ Battleground.CastDeserter = 1
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-Battleground.QueueAnnouncer.Enable = 0
+Battleground.QueueAnnouncer.Enable = 1
 
 #
 #    Battleground.QueueAnnouncer.PlayerOnly
@@ -2164,7 +2164,7 @@ Battleground.RewardLoserHonorLast   = 5
 #         Default:     0 - (Disabled)
 #                      1 - (Enabled, Experimental as of still being in development)
 
-Wintergrasp.Enable = 0
+Wintergrasp.Enable = 1
 
 #
 #     Wintergrasp.PlayerMax
@@ -2693,7 +2693,7 @@ AuctionHouseBot.Update.Interval = 20
 #       Default:     0 - (Disabled)
 #                    1 - (Enabled)
 
-AuctionHouseBot.Seller.Enabled = 0
+AuctionHouseBot.Seller.Enabled = 1
 
 #
 #    AuctionHouseBot.Alliance.Items.Amount.Ratio
@@ -2766,10 +2766,10 @@ AuctionHouseBot.Items.Misc = 0
 #                    1 - (Enabled)
 
 AuctionHouseBot.Bind.No = 1
-AuctionHouseBot.Bind.Pickup = 0
+AuctionHouseBot.Bind.Pickup = 1
 AuctionHouseBot.Bind.Equip = 1
 AuctionHouseBot.Bind.Use = 1
-AuctionHouseBot.Bind.Quest = 0
+AuctionHouseBot.Bind.Quest = 1
 
 #
 #    AuctionHouseBot.LockBox.Enabled
@@ -2801,7 +2801,7 @@ AuctionHouseBot.ItemsPerCycle.Normal = 20
 #       Default:     1 - (use SellPrice)
 #                    0 - (use BuyPrice)
 
-AuctionHouseBot.BuyPrice.Seller = 1
+AuctionHouseBot.BuyPrice.Seller = 0
 
 #
 #    AuctionHouseBot.Alliance.Price.Ratio
@@ -2830,7 +2830,7 @@ AuctionHouseBot.Neutral.Price.Ratio = 100
 #       Default:     0 - (Disabled)
 
 AuctionHouseBot.Items.ItemLevel.Min = 0
-AuctionHouseBot.Items.ItemLevel.Max = 0
+AuctionHouseBot.Items.ItemLevel.Max = 220
 
 #
 #    AuctionHouseBot.Items.ReqLevel.*
@@ -2856,11 +2856,11 @@ AuctionHouseBot.Items.ReqSkill.Max = 0
 #                    items that will finally be shown on Auction House
 #       Default:     0, 2000, 2500, 1500, 1000, 0, 0 (Gray, white, green, blue, purple, orange, yellow)
 
-AuctionHouseBot.Items.Amount.Gray = 0
-AuctionHouseBot.Items.Amount.White = 2000
-AuctionHouseBot.Items.Amount.Green = 2500
-AuctionHouseBot.Items.Amount.Blue = 1500
-AuctionHouseBot.Items.Amount.Purple = 1000
+AuctionHouseBot.Items.Amount.Gray = 50000
+AuctionHouseBot.Items.Amount.White = 50000
+AuctionHouseBot.Items.Amount.Green = 50000
+AuctionHouseBot.Items.Amount.Blue = 50000
+AuctionHouseBot.Items.Amount.Purple = 50000
 AuctionHouseBot.Items.Amount.Orange = 0
 AuctionHouseBot.Items.Amount.Yellow = 0
 
@@ -2884,21 +2884,21 @@ AuctionHouseBot.Items.Amount.Yellow = 0
 #                    Misc: 5
 #                    Glyph: 3
 
-AuctionHouseBot.Class.Consumable = 6
-AuctionHouseBot.Class.Container = 4
+AuctionHouseBot.Class.Consumable = 0
+AuctionHouseBot.Class.Container = 8
 AuctionHouseBot.Class.Weapon = 8
-AuctionHouseBot.Class.Gem = 3
+AuctionHouseBot.Class.Gem = 0
 AuctionHouseBot.Class.Armor = 8
-AuctionHouseBot.Class.Reagent = 1
-AuctionHouseBot.Class.Projectile = 2
-AuctionHouseBot.Class.TradeGood = 10
-AuctionHouseBot.Class.Generic = 1
-AuctionHouseBot.Class.Recipe = 6
-AuctionHouseBot.Class.Quiver = 1
-AuctionHouseBot.Class.Quest = 1
-AuctionHouseBot.Class.Key = 1
-AuctionHouseBot.Class.Misc = 5
-AuctionHouseBot.Class.Glyph = 3
+AuctionHouseBot.Class.Reagent = 0
+AuctionHouseBot.Class.Projectile = 0
+AuctionHouseBot.Class.TradeGood = 0
+AuctionHouseBot.Class.Generic = 0
+AuctionHouseBot.Class.Recipe = 0
+AuctionHouseBot.Class.Quiver = 0
+AuctionHouseBot.Class.Quest = 8
+AuctionHouseBot.Class.Key = 0
+AuctionHouseBot.Class.Misc = 8
+AuctionHouseBot.Class.Glyph = 0
 
 #
 ###################################################################################################
@@ -2962,7 +2962,7 @@ AuctionHouseBot.Class.Container.ItemLevel.Max = 0
 #                    List of ids with delimiter ','
 #       Default:     ""
 
-AuctionHouseBot.forceIncludeItems = ""
+AuctionHouseBot.forceIncludeItems = "45693,32458"
 
 #
 #    AuctionHouseBot.forceExcludeItems
@@ -3221,6 +3221,7 @@ PacketSpoof.BanDuration = 86400
 
 #
 ###################################################################################################
+config.levelcap = 1
 
 ###################################################################################################
 #    Transmogrification config
@@ -3368,26 +3369,26 @@ Transmogrification.TokenAmount = 1
 #        Description: Ignore stat count > 0 requirement for source items
 #        Default:    0
 
-Transmogrification.AllowPoor = 0
-Transmogrification.AllowCommon = 0
+Transmogrification.AllowPoor = 1
+Transmogrification.AllowCommon = 1
 Transmogrification.AllowUncommon = 1
 Transmogrification.AllowRare = 1
 Transmogrification.AllowEpic = 1
-Transmogrification.AllowLegendary = 0
-Transmogrification.AllowArtifact = 0
+Transmogrification.AllowLegendary = 1
+Transmogrification.AllowArtifact = 1
 Transmogrification.AllowHeirloom = 1
 
-Transmogrification.AllowMixedArmorTypes = 0
-Transmogrification.AllowMixedWeaponTypes = 0
-Transmogrification.AllowFishingPoles = 0
+Transmogrification.AllowMixedArmorTypes = 1
+Transmogrification.AllowMixedWeaponTypes = 1
+Transmogrification.AllowFishingPoles = 1
 
-Transmogrification.IgnoreReqRace = 0
-Transmogrification.IgnoreReqClass = 0
-Transmogrification.IgnoreReqSkill = 0
-Transmogrification.IgnoreReqSpell = 0
-Transmogrification.IgnoreReqLevel = 0
-Transmogrification.IgnoreReqEvent = 0
-Transmogrification.IgnoreReqStats = 0
+Transmogrification.IgnoreReqRace = 1
+Transmogrification.IgnoreReqClass = 1
+Transmogrification.IgnoreReqSkill = 1
+Transmogrification.IgnoreReqSpell = 1
+Transmogrification.IgnoreReqLevel = 1
+Transmogrification.IgnoreReqEvent = 1
+Transmogrification.IgnoreReqStats = 1
 
 #
 #    SET FEATURE
