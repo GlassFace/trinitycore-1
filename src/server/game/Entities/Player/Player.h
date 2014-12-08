@@ -144,6 +144,13 @@ typedef std::unordered_map<uint32, PlayerTalent*> PlayerTalentMap;
 typedef std::unordered_map<uint32, PlayerSpell*> PlayerSpellMap;
 typedef std::list<SpellModifier*> SpellModList;
 
+struct ReforgeData
+{
+    uint32 increase, decrease;
+    int32 stat_value;
+};
+typedef std::unordered_map<uint32, ReforgeData> ReforgeMapType;
+
 typedef std::list<uint64> WhisperListContainer;
 
 struct SpellCooldown
@@ -2355,6 +2362,9 @@ class Player : public Unit, public GridObject<Player>
 
         std::string GetMapAreaAndZoneString();
         std::string GetCoordsMapAreaAndZoneString();
+        
+        ReforgeMapType reforgeMap; // reforgeMap[iGUID] = ReforgeData
+        
 		bool IsLoading() const;
 
         TransmogMapType transmogMap; // transmogMap[iGUID] = entry
