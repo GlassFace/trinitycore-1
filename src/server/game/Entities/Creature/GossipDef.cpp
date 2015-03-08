@@ -455,16 +455,8 @@ void PlayerMenu::SendQuestGiverQuestDetails(Quest const* quest, uint64 npcGUID, 
                 data << uint32(0);
         }
 
-        uint8 jilv = rand()%99+1;
-        uint8 baoji;
-        if (jilv >= 70) {
-           baoji = rand()%3+2;
-        } else {
-           baoji = 1;
-        }
-
         data << uint32(quest->GetRewOrReqMoney());
-        data << uint32(quest->XPValue(_session->GetPlayer()) * sWorld->getRate(RATE_XP_QUEST) * baoji);
+        data << uint32(quest->XPValue(_session->GetPlayer()) * sWorld->getRate(RATE_XP_QUEST));
     }
 
     // rewarded honor points. Multiply with 10 to satisfy client
@@ -701,16 +693,8 @@ void PlayerMenu::SendQuestGiverOfferReward(Quest const* quest, uint64 npcGUID, b
             data << uint32(0);
     }
 
-    uint8 jilv = rand()%99+1;
-        uint8 baoji;
-        if (jilv >= 70) {
-           baoji = rand()%3+2;
-        } else {
-           baoji = 1;
-        }
-
     data << uint32(quest->GetRewOrReqMoney());
-    data << uint32(quest->XPValue(_session->GetPlayer()) * sWorld->getRate(RATE_XP_QUEST) * baoji);
+    data << uint32(quest->XPValue(_session->GetPlayer()) * sWorld->getRate(RATE_XP_QUEST));
 
     // rewarded honor points. Multiply with 10 to satisfy client
     data << uint32(10 * quest->CalculateHonorGain(_session->GetPlayer()->GetQuestLevel(quest)));
