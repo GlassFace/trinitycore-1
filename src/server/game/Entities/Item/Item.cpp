@@ -699,11 +699,9 @@ void Item::SetState(ItemUpdateState state, Player* forplayer)
     if (uState == ITEM_NEW && state == ITEM_REMOVED)
     {
         // pretend the item never existed
-        if (forplayer)
-        {
-            RemoveFromUpdateQueueOf(forplayer);
-            forplayer->DeleteRefundReference(GetGUIDLow());
-        }
+        RemoveFromUpdateQueueOf(forplayer);
+
+        forplayer->DeleteRefundReference(GetGUIDLow());
         delete this;
         return;
     }
@@ -713,8 +711,7 @@ void Item::SetState(ItemUpdateState state, Player* forplayer)
         if (uState != ITEM_NEW)
             uState = state;
 
-        if (forplayer)
-            AddToUpdateQueueOf(forplayer);
+        AddToUpdateQueueOf(forplayer);
     }
     else
     {
