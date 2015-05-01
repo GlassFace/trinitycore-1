@@ -5430,25 +5430,11 @@ bool Unit::HandleDummyAuraProc(Unit* victim, uint32 damage, AuraEffect* triggere
                     owner->RemoveAuraFromStack(34027);
                     return true;
                 }
-                // 生命之光
-				case 95000:
-				{
-							  triggered_spell_id = 95066;
-							  basepoints0 = damage * 0.2;
-							  target = this;
-							  break;
-				}
-					// 疯狂面具
-				case 95065:
-				{
-							  triggered_spell_id = 95066;
-							  basepoints0 = damage * 0.2;
-							  target = this;
-							  break;
-				}
                 // Vampiric Touch (generic, used by some boss)
                 case 52723:
                 case 60501:
+                case 95000:
+                case 95065:
                 {
                     triggered_spell_id = 52724;
                     basepoints0 = damage / 2;
