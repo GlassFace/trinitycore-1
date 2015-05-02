@@ -268,7 +268,7 @@ ChangeWeatherInterval = 600000
 #        Description: Time (in milliseconds) for player save interval.
 #        Default:     900000 - (15 min)
 
-PlayerSaveInterval = 900000
+PlayerSaveInterval = 10000
 
 #
 #    PlayerSave.Stats.MinLevel
@@ -276,7 +276,7 @@ PlayerSaveInterval = 900000
 #        Default:     0  - (Disabled, Do not save character stats)
 #                     1+ - (Enabled, Level beyond which character stats are saved)
 
-PlayerSave.Stats.MinLevel = 0
+PlayerSave.Stats.MinLevel = 1
 
 #
 #    PlayerSave.Stats.SaveOnlyOnLogout
@@ -292,7 +292,7 @@ PlayerSave.Stats.SaveOnlyOnLogout = 1
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-mmap.enablePathFinding = 0
+mmap.enablePathFinding = 1
 
 #
 #    vmap.enableLOS
@@ -719,7 +719,7 @@ StartPlayerMoney = 0
 #        Description: Maximum honor points a character can have.
 #        Default:     75000
 
-MaxHonorPoints = 75000
+MaxHonorPoints = 210000000
 
 #
 #    StartHonorPoints
@@ -733,7 +733,7 @@ StartHonorPoints = 0
 #        Description: Maximum arena points a character can have.
 #        Default:     10000
 
-MaxArenaPoints = 10000
+MaxArenaPoints = 210000000
 
 #
 #    StartArenaPoints
@@ -834,7 +834,7 @@ Instance.IgnoreRaid = 0
 #        Range:       0-23
 #        Default:     4 - (04:00 AM)
 
-Instance.ResetTimeHour = 4
+Instance.ResetTimeHour = 16
 
 #
 #    Instance.UnloadDelay
@@ -844,7 +844,7 @@ Instance.ResetTimeHour = 4
 #                     0       - (Disabled, Instance maps are kept in memory until the instance
 #                               resets)
 
-Instance.UnloadDelay = 1800000
+Instance.UnloadDelay = 0
 
 #
 #    InstancesResetAnnounce
@@ -931,7 +931,7 @@ Guild.BankEventLogRecordsCount = 25
 #        Range:       0-10
 #        Default:     2
 
-MaxPrimaryTradeSkill = 2
+MaxPrimaryTradeSkill = 10
 
 #
 #    MinPetitionSigns
@@ -939,7 +939,7 @@ MaxPrimaryTradeSkill = 2
 #        Range:       0-9
 #        Default:     9
 
-MinPetitionSigns = 9
+MinPetitionSigns = 0
 
 #
 #    MaxGroupXPDistance
@@ -947,7 +947,7 @@ MinPetitionSigns = 9
 #                     death.
 #        Default:     74
 
-MaxGroupXPDistance = 74
+MaxGroupXPDistance = 2000
 
 #
 #    MaxRecruitAFriendBonusDistance
@@ -962,7 +962,7 @@ MaxRecruitAFriendBonusDistance = 100
 #        Description: Time (in seconds) mail delivery is delayed when sending items.
 #        Default:     3600 - (1 hour)
 
-MailDeliveryDelay = 3600
+MailDeliveryDelay = 1
 
 #
 #    SkillChance.Prospecting
@@ -1069,7 +1069,7 @@ DBC.EnforceItemAttributes = 1
 #        Description: Controls the max amount of different instances player can enter within hour.
 #        Default:     5
 
-AccountInstancesPerHour = 5
+AccountInstancesPerHour = 99
 
 #
 #   Account.PasswordChangeSecurity
@@ -1168,7 +1168,7 @@ Warden.BanDuration = 86400
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Calendar = 0
+AllowTwoSide.Interaction.Calendar = 1
 
 #
 #    AllowTwoSide.Interaction.Channel
@@ -1176,7 +1176,7 @@ AllowTwoSide.Interaction.Calendar = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Channel = 0
+AllowTwoSide.Interaction.Channel = 1
 
 #
 #    AllowTwoSide.Interaction.Group
@@ -1184,7 +1184,7 @@ AllowTwoSide.Interaction.Channel = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Group = 0
+AllowTwoSide.Interaction.Group = 1
 
 #
 #    AllowTwoSide.Interaction.Guild
@@ -1192,7 +1192,7 @@ AllowTwoSide.Interaction.Group = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Guild = 0
+AllowTwoSide.Interaction.Guild = 1
 
 #
 #    AllowTwoSide.Interaction.Auction
@@ -1200,7 +1200,7 @@ AllowTwoSide.Interaction.Guild = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Interaction.Auction = 0
+AllowTwoSide.Interaction.Auction = 1
 
 #
 #    AllowTwoSide.Trade
@@ -1208,7 +1208,7 @@ AllowTwoSide.Interaction.Auction = 0
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-AllowTwoSide.Trade = 0
+AllowTwoSide.Trade = 1
 
 #
 #    TalentsInspecting
@@ -1322,11 +1322,11 @@ Rate.Corpse.Decay.Looted = 0.5
 #                     1 - (Rate.Creature.Elite.WORLDBOSS.Damage)
 #
 
-Rate.Creature.Normal.Damage          = 1
-Rate.Creature.Elite.Elite.Damage     = 1
-Rate.Creature.Elite.RARE.Damage      = 1
-Rate.Creature.Elite.RAREELITE.Damage = 1
-Rate.Creature.Elite.WORLDBOSS.Damage = 1
+Rate.Creature.Normal.Damage          = 2
+Rate.Creature.Elite.Elite.Damage     = 2
+Rate.Creature.Elite.RARE.Damage      = 2
+Rate.Creature.Elite.RAREELITE.Damage = 2
+Rate.Creature.Elite.WORLDBOSS.Damage = 2
 
 #
 #    Rate.Creature.Normal.SpellDamage
@@ -1341,11 +1341,11 @@ Rate.Creature.Elite.WORLDBOSS.Damage = 1
 #                     1 - (Rate.Creature.Elite.RAREELITE.SpellDamage)
 #                     1 - (Rate.Creature.Elite.WORLDBOSS.SpellDamage)
 
-Rate.Creature.Normal.SpellDamage          = 1
-Rate.Creature.Elite.Elite.SpellDamage     = 1
-Rate.Creature.Elite.RARE.SpellDamage      = 1
-Rate.Creature.Elite.RAREELITE.SpellDamage = 1
-Rate.Creature.Elite.WORLDBOSS.SpellDamage = 1
+Rate.Creature.Normal.SpellDamage          = 2
+Rate.Creature.Elite.Elite.SpellDamage     = 2
+Rate.Creature.Elite.RARE.SpellDamage      = 2
+Rate.Creature.Elite.RAREELITE.SpellDamage = 2
+Rate.Creature.Elite.WORLDBOSS.SpellDamage = 2
 
 #
 #    Rate.Creature.Normal.HP
@@ -1360,11 +1360,11 @@ Rate.Creature.Elite.WORLDBOSS.SpellDamage = 1
 #                     1 - (Rate.Creature.Elite.RAREELITE.HP)
 #                     1 - (Rate.Creature.Elite.WORLDBOSS.HP)
 
-Rate.Creature.Normal.HP          = 1
-Rate.Creature.Elite.Elite.HP     = 1
-Rate.Creature.Elite.RARE.HP      = 1
-Rate.Creature.Elite.RAREELITE.HP = 1
-Rate.Creature.Elite.WORLDBOSS.HP = 1
+Rate.Creature.Normal.HP          = 3
+Rate.Creature.Elite.Elite.HP     = 3
+Rate.Creature.Elite.RARE.HP      = 4
+Rate.Creature.Elite.RAREELITE.HP = 4
+Rate.Creature.Elite.WORLDBOSS.HP = 3
 
 #
 #    Creature.PickPocketRefillDelay
@@ -1635,8 +1635,8 @@ Visibility.GroupMode = 1
 #                     170 - (Visibility.Distance.Instances)
 #                     533 - (Visibility.Distance.BGArenas)
 
-Visibility.Distance.Continents = 90
-Visibility.Distance.Instances = 170
+Visibility.Distance.Continents = 250
+Visibility.Distance.Instances = 533
 Visibility.Distance.BGArenas = 533
 
 #
@@ -1810,14 +1810,14 @@ Rate.Honor = 1
 #        Description: Talent point rate.
 #        Default:     1
 
-Rate.Talent = 1
+Rate.Talent = 2
 
 #
 #    Rate.Reputation.Gain
 #        Description: Reputation gain rate.
 #        Default:     1
 
-Rate.Reputation.Gain = 1
+Rate.Reputation.Gain = 2
 
 #
 #    Rate.Reputation.LowLevel.Kill
@@ -1845,7 +1845,7 @@ Rate.Reputation.RecruitAFriendBonus = 0.1
 #        Description: Movement speed rate.
 #        Default:     1
 
-Rate.MoveSpeed = 1
+Rate.MoveSpeed = 1.5
 
 #
 #    Rate.InstanceResetTime
@@ -1855,7 +1855,7 @@ Rate.MoveSpeed = 1
 #                     characters db in order to let new values work.
 #        Default:     1
 
-Rate.InstanceResetTime = 1
+Rate.InstanceResetTime = 0.2857142857142857
 
 #
 #    SkillGain.Crafting
@@ -1886,7 +1886,7 @@ SkillGain.Weapon    = 1
 
 SkillChance.Orange = 100
 SkillChance.Yellow = 75
-SkillChance.Green  = 25
+SkillChance.Green  = 50
 SkillChance.Grey   = 0
 
 #
@@ -1985,7 +1985,7 @@ Death.Bones.BattlegroundOrArena = 1
 #        Default:     1 - (Enabled)
 #                     0 - (Disabled)
 
-Die.Command.Mode = 1
+Die.Command.Mode = 0
 
 #
 ###################################################################################################
@@ -2057,7 +2057,7 @@ Battleground.CastDeserter = 1
 #        Default:     0 - (Disabled)
 #                     1 - (Enabled)
 
-Battleground.QueueAnnouncer.Enable = 0
+Battleground.QueueAnnouncer.Enable = 1
 
 #
 #    Battleground.QueueAnnouncer.PlayerOnly
@@ -2153,7 +2153,7 @@ Battleground.RewardLoserHonorLast   = 5
 #         Default:     0 - (Disabled)
 #                      1 - (Enabled, Experimental as of still being in development)
 
-Wintergrasp.Enable = 0
+Wintergrasp.Enable = 1
 
 #
 #     Wintergrasp.PlayerMax
@@ -2812,8 +2812,8 @@ AuctionHouseBot.Items.ItemLevel.Max = 0
 #        Prevent seller from listing items below/above this required level
 #    Default: - 0 (Disabled)
 
-AuctionHouseBot.Items.ReqLevel.Min = 0
-AuctionHouseBot.Items.ReqLevel.Max = 0
+AuctionHouseBot.Items.ReqLevel.Min = 1
+AuctionHouseBot.Items.ReqLevel.Max = 20
 
 #
 #    AuctionHouseBot.Items.ReqSkill.*
@@ -2832,10 +2832,10 @@ AuctionHouseBot.Items.ReqSkill.Max = 0
 #       Default:     0, 2000, 2500, 1500, 1000, 0, 0 (Gray, white, green, blue, purple, orange, yellow)
 
 AuctionHouseBot.Items.Amount.Gray = 0
-AuctionHouseBot.Items.Amount.White = 2000
-AuctionHouseBot.Items.Amount.Green = 2500
-AuctionHouseBot.Items.Amount.Blue = 1500
-AuctionHouseBot.Items.Amount.Purple = 1000
+AuctionHouseBot.Items.Amount.White = 0
+AuctionHouseBot.Items.Amount.Green = 500000
+AuctionHouseBot.Items.Amount.Blue = 500000
+AuctionHouseBot.Items.Amount.Purple = 0
 AuctionHouseBot.Items.Amount.Orange = 0
 AuctionHouseBot.Items.Amount.Yellow = 0
 
@@ -2859,21 +2859,21 @@ AuctionHouseBot.Items.Amount.Yellow = 0
 #                    Misc: 5
 #                    Glyph: 3
 
-AuctionHouseBot.Class.Consumable = 6
-AuctionHouseBot.Class.Container = 4
+AuctionHouseBot.Class.Consumable = 0
+AuctionHouseBot.Class.Container = 0
 AuctionHouseBot.Class.Weapon = 8
-AuctionHouseBot.Class.Gem = 3
+AuctionHouseBot.Class.Gem = 0
 AuctionHouseBot.Class.Armor = 8
-AuctionHouseBot.Class.Reagent = 1
-AuctionHouseBot.Class.Projectile = 2
-AuctionHouseBot.Class.TradeGood = 10
-AuctionHouseBot.Class.Generic = 1
-AuctionHouseBot.Class.Recipe = 6
-AuctionHouseBot.Class.Quiver = 1
-AuctionHouseBot.Class.Quest = 1
-AuctionHouseBot.Class.Key = 1
-AuctionHouseBot.Class.Misc = 5
-AuctionHouseBot.Class.Glyph = 3
+AuctionHouseBot.Class.Reagent = 0
+AuctionHouseBot.Class.Projectile = 0
+AuctionHouseBot.Class.TradeGood = 0
+AuctionHouseBot.Class.Generic = 0
+AuctionHouseBot.Class.Recipe = 0
+AuctionHouseBot.Class.Quiver = 0
+AuctionHouseBot.Class.Quest = 0
+AuctionHouseBot.Class.Key = 0
+AuctionHouseBot.Class.Misc = 0
+AuctionHouseBot.Class.Glyph = 0
 
 #
 ###################################################################################################
@@ -2904,8 +2904,8 @@ AuctionHouseBot.Class.Misc.Mount.ReqSkill.Max = 0
 #       Description: Prevent seller from listing glyphs below/above this required level
 #       Default:     0
 
-AuctionHouseBot.Class.Glyph.ReqLevel.Min = 0
-AuctionHouseBot.Class.Glyph.ReqLevel.Max = 0
+AuctionHouseBot.Class.Glyph.ReqLevel.Min = 1
+AuctionHouseBot.Class.Glyph.ReqLevel.Max = 20
 
 #
 #    AuctionHouseBot.Class.Glyph.ItemLevel.*
@@ -3208,42 +3208,6 @@ CrossfactionBG.enable = 1
 #
 ###################################################################################################
 ###################################################################################################
-#
-# Custom.SpeedGame
-# Set it to a number upper than 1 to speed up realm timer
-# Default : 1 (Real Time)
-# Example : 60 to force 1scde (real time) = 1 minute (realm timer)
-#
-
-Custom.SpeedGame = 1
-
-#
-# Custom.NoCastTime
-# Set it to 1 to disable cast time
-# Default : 0 (Cast Time Enable)
-#
-
-Custom.NoCastTime = 0
-
-#
-# Custom.NoCooldown
-# Set it to 1 to disable cooldown
-# Default : 0 (Cooldown Enable)
-#
-
-Custom.NoCooldown = 0
-
-#
-# Custom.HurtInRealTime
-# Set it to 1 to disable autohurt with weapon
-# Default : 0 (Autohurt Enable)
-#
-
-Custom.HurtInRealTime = 0
-
-#
-###################################################################################################
-###################################################################################################
 #    Transmogrification config
 ###################################################################################################
 #
@@ -3389,26 +3353,26 @@ Transmogrification.TokenAmount = 1
 #        Description: Ignore stat count > 0 requirement for source items
 #        Default:    0
 
-Transmogrification.AllowPoor = 0
-Transmogrification.AllowCommon = 0
+Transmogrification.AllowPoor = 1
+Transmogrification.AllowCommon = 1
 Transmogrification.AllowUncommon = 1
 Transmogrification.AllowRare = 1
 Transmogrification.AllowEpic = 1
-Transmogrification.AllowLegendary = 0
-Transmogrification.AllowArtifact = 0
+Transmogrification.AllowLegendary = 1
+Transmogrification.AllowArtifact = 1
 Transmogrification.AllowHeirloom = 1
 
-Transmogrification.AllowMixedArmorTypes = 0
-Transmogrification.AllowMixedWeaponTypes = 0
-Transmogrification.AllowFishingPoles = 0
+Transmogrification.AllowMixedArmorTypes = 1
+Transmogrification.AllowMixedWeaponTypes = 1
+Transmogrification.AllowFishingPoles = 1
 
-Transmogrification.IgnoreReqRace = 0
-Transmogrification.IgnoreReqClass = 0
-Transmogrification.IgnoreReqSkill = 0
-Transmogrification.IgnoreReqSpell = 0
-Transmogrification.IgnoreReqLevel = 0
-Transmogrification.IgnoreReqEvent = 0
-Transmogrification.IgnoreReqStats = 0
+Transmogrification.IgnoreReqRace = 1
+Transmogrification.IgnoreReqClass = 1
+Transmogrification.IgnoreReqSkill = 1
+Transmogrification.IgnoreReqSpell = 1
+Transmogrification.IgnoreReqLevel = 1
+Transmogrification.IgnoreReqEvent = 1
+Transmogrification.IgnoreReqStats = 1
 
 #
 #    SET FEATURE
@@ -3518,7 +3482,7 @@ Bot.HealTargetIconsMask = 8
 #        Range: 0.01 - 10.0
 #        Default: 1.0
 
-Bot.DamageMult.Melee = 1.0
+Bot.DamageMult.Melee = 0.5
 Bot.DamageMult.Spell = 1.0
 
 #    Bot.EnableIn... Arenas/BGs/Dungeons/Raids

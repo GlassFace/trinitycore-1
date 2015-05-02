@@ -84,9 +84,6 @@ enum WorldTimers
 /// Configuration elements
 enum WorldBoolConfigs
 {
-    CONFIG_NO_CAST_TIME,
-    CONFIG_NO_COOLDOWN,
-    CONFIG_HURT_IN_REAL_TIME,
     CONFIG_DURABILITY_LOSS_IN_PVP = 0,
     BATTLEGROUND_CROSSFACTION_ENABLED,
     CONFIG_ADDON_CHANNEL,
@@ -166,7 +163,6 @@ enum WorldBoolConfigs
 
 enum WorldFloatConfigs
 {
-    CONFIG_SPEED_GAME,
     CONFIG_GROUP_XP_DISTANCE = 0,
     CONFIG_MAX_RECRUIT_A_FRIEND_DISTANCE,
     CONFIG_SIGHT_MONSTER,
