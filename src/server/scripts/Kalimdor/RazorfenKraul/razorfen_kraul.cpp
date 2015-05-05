@@ -261,7 +261,7 @@ class spell_snufflenose_command : public SpellScriptLoader
 
 void AddSC_razorfen_kraul()
 {
-    new npc_snufflenose_gopher();
+    //new npc_snufflenose_gopher();
     new npc_willix();
     new spell_snufflenose_command();
 }

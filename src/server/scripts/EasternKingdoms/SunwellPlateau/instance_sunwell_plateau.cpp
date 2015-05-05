@@ -40,6 +40,13 @@ DoorData const doorData[] =
     { 0,                   0,             DOOR_TYPE_ROOM,    BOUNDARY_NONE } // END
 };
 
+
+Position const DrakeSpawnLoc[2] = // drakonid
+{
+	{ 1471.668579f, 556.829590f, 52.885485f, 5.270895f },
+	{ -7514.598633f, -1150.448853f, 476.796570f, 3.0f }
+};
+
 class instance_sunwell_plateau : public InstanceMapScript
 {
     public:
@@ -71,6 +78,13 @@ class instance_sunwell_plateau : public InstanceMapScript
                 SpectralRealmTimer          = 5000;
             }
 
+            uint64 KeeperGUIDs[4];
+            void Initialize() override
+            {
+            memset(_summonYSKeeper, false, sizeof(_summonYSKeeper));
+            memset(KeeperGUIDs, 0, sizeof(KeeperGUIDs));
+            memset(_summonObservationRingKeeper, false, sizeof(_summonObservationRingKeeper));
+            }
             Player const* GetPlayerInMap() const
             {
                 Map::PlayerList const& players = instance->GetPlayers();
@@ -155,6 +169,46 @@ class instance_sunwell_plateau : public InstanceMapScript
                 }
             }
 
+                        void OnPlayerEnter(Player* player) override
+            {
+                // Keepers at Observation Ring
+                if (GetBossState(DATA_BRUTALLUS) == DONE && _summonObservationRingKeeper[0] && !KeeperGUIDs[0])
+                {
+                    _summonObservationRingKeeper[0] = false;
+                    instance->SummonCreature(NPC_FELMYST, DrakeSpawnLoc[0]);
+                }
+            }
+            
+            void ReadSaveDataMore(std::istringstream& data) override
+            {
+                uint32 tempState;
+                data >> tempState;
+                for (uint8 i = 0; i < 4; ++i)
+                {
+                    data >> tempState;
+                    _summonYSKeeper[i] = tempState != 0;
+                }
+
+                if (GetBossState(DATA_BRUTALLUS) == DONE && GetBossState(DATA_FELMYST) != DONE)
+                    _summonObservationRingKeeper[0] = true;
+            }
+            
+            bool SetBossState(uint32 type, EncounterState state) override
+            {
+                  if (!InstanceScript::SetBossState(type, state))
+                    return false;
+                    
+                    
+                    switch (type)
+                {
+                    case DATA_BRUTALLUS:
+                    if (state == DONE)
+						instance->SummonCreature(NPC_FELMYST, DrakeSpawnLoc[0]);
+                    break;
+                }
+                
+                return true;
+            }
             void OnGameObjectRemove(GameObject* go) override
             {
                 switch (go->GetEntry())
@@ -231,6 +285,9 @@ class instance_sunwell_plateau : public InstanceMapScript
 
             uint32 SpectralRealmTimer;
             std::vector<uint64> SpectralRealmList;
+            
+            bool _summonObservationRingKeeper[4];
+            bool _summonYSKeeper[4];
         };
 
         InstanceScript* GetInstanceScript(InstanceMap* map) const override

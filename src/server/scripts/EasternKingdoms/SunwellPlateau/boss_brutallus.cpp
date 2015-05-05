@@ -131,7 +131,7 @@ public:
             Talk(YELL_DEATH);
 
             instance->SetBossState(DATA_BRUTALLUS, DONE);
-            me->SummonCreature(NPC_FELMYST, 1471.668579, 556.829590, 22.885485 + 30, 0);
+            //me->SummonCreature(NPC_FELMYST, 1471.668579, 556.829590, 22.885485 + 30, 0);
         }
 
         void EnterEvadeMode() override

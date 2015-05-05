@@ -18,6 +18,7 @@
 #ifndef SUNWELL_PLATEAU_H
 #define SUNWELL_PLATEAU_H
 
+#include "ObjectMgr.h"
 #define SunwellPlateauScriptName "instance_sunwell_plateau"
 #define DataHeader "SWP"
 
