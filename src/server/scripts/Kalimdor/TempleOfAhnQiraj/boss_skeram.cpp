@@ -171,7 +171,7 @@ class boss_skeram : public CreatureScript
                             break;
                         case EVENT_EARTH_SHOCK:
                             DoCastVictim(SPELL_EARTH_SHOCK);
-                            events.ScheduleEvent(EVENT_EARTH_SHOCK, 2000);
+                            events.ScheduleEvent(EVENT_EARTH_SHOCK, 7000);
                             break;
                     }
                 }

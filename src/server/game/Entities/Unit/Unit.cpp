@@ -15600,18 +15600,11 @@ void Unit::SetControlled(bool apply, UnitState state)
         {
             case UNIT_STATE_STUNNED:
                 SetStunned(true);
-                // i need to stop fear on stun and root or i will get teleport to destination issue as MVMGEN for fear keeps going on
-                if (HasUnitState(UNIT_STATE_FLEEING))
-                    SetFeared(false);
                 CastStop();
                 break;
             case UNIT_STATE_ROOT:
                 if (!HasUnitState(UNIT_STATE_STUNNED))
-                {
                     SetRooted(true);
-                    if (HasUnitState(UNIT_STATE_FLEEING))
-                        SetFeared(false);
-                }
                 break;
             case UNIT_STATE_CONFUSED:
                 if (!HasUnitState(UNIT_STATE_STUNNED))
@@ -15699,11 +15692,9 @@ void Unit::SetStunned(bool apply)
         // setting MOVEMENTFLAG_ROOT
         RemoveUnitMovementFlag(MOVEMENTFLAG_MASK_MOVING);
         AddUnitMovementFlag(MOVEMENTFLAG_ROOT);
+        StopMoving(); 
 
-        // Creature specific
-        if (GetTypeId() != TYPEID_PLAYER)
-            StopMoving();
-        else
+        if (GetTypeId() == TYPEID_PLAYER) 
             SetStandState(UNIT_STAND_STATE_STAND);
 
         WorldPacket data(SMSG_FORCE_MOVE_ROOT, 8);
@@ -15747,6 +15738,7 @@ void Unit::SetRooted(bool apply)
         // setting MOVEMENTFLAG_ROOT
         RemoveUnitMovementFlag(MOVEMENTFLAG_MASK_MOVING);
         AddUnitMovementFlag(MOVEMENTFLAG_ROOT);
+        StopMoving(); 
 
         if (GetTypeId() == TYPEID_PLAYER)
         {
@@ -15760,7 +15752,6 @@ void Unit::SetRooted(bool apply)
             WorldPacket data(SMSG_SPLINE_MOVE_ROOT, 8);
             data.append(GetPackGUID());
             SendMessageToSet(&data, true);
-            StopMoving();
         }
     }
     else
