@@ -23,7 +23,6 @@
 #include "SharedDefines.h"
 #include "ScriptMgr.h"
 #include "Player.h"
-#include "Guild.h"
 #include "WorldSession.h"
 
 namespace Trinity
@@ -185,16 +184,6 @@ namespace Trinity
 
                     xpMod *= creature->GetCreatureTemplate()->ModExperience;
                 }
-
-                //Guild-Level-System (Bonus: MonsterKillXp)
-                    if (Guild* guild = player->GetGuild())
-                    {
-                        //GuildXP-Bonus
-                        if (guild->HasLevelForBonus(GUILD_BONUS_XP_1))
-                            gain += uint32(gain*0.05f);
-                        if (guild->HasLevelForBonus(GUILD_BONUS_XP_2))
-                            gain += uint32(gain*0.1f);
-                    }
 
                 xpMod *= sWorld->getRate(RATE_XP_KILL);
                 gain = uint32(gain * xpMod);

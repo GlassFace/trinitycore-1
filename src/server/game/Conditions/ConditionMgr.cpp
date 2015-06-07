@@ -28,7 +28,6 @@
 #include "SpellAuras.h"
 #include "SpellMgr.h"
 #include "Spell.h"
-#include "Guild.h"
 
 // Checks if object meets the condition
 // Can have CONDITION_SOURCE_TYPE_NONE && !mReferenceId if called from a special event (ie: eventAI)
@@ -341,13 +340,6 @@ bool Condition::Meets(ConditionSourceInfo& sourceInfo)
                 condMeets = creature->GetCreatureTemplate()->type == ConditionValue1;
             break;
         }
-        case CONDITION_GUILD_LEVEL:
-        {
-            if (Player* player = object->ToPlayer())
-                if (Guild* guild = player->GetGuild())
-                    condMeets = CompareValues(static_cast<ComparisionType>(ConditionValue2), static_cast<uint32>(guild->GetLevel()), ConditionValue1);
-            break;
-        }
         default:
             condMeets = false;
             break;
@@ -511,9 +503,6 @@ uint32 Condition::GetSearcherTypeMaskForCondition()
             break;
         case CONDITION_CREATURE_TYPE:
             mask |= GRID_MAP_TYPE_MASK_CREATURE;
-            break;
-        case CONDITION_GUILD_LEVEL:
-            mask |= GRID_MAP_TYPE_MASK_PLAYER;
             break;
         default:
             ASSERT(false && "Condition::GetSearcherTypeMaskForCondition - missing condition handling!");
@@ -1981,17 +1970,6 @@ bool ConditionMgr::isConditionTypeValid(Condition* cond)
                 TC_LOG_ERROR("sql.sql", "Alive condition has useless data in value2 (%u)!", cond->ConditionValue2);
             if (cond->ConditionValue3)
                 TC_LOG_ERROR("sql.sql", "Alive condition has useless data in value3 (%u)!", cond->ConditionValue3);
-            break;
-        }
-        case CONDITION_GUILD_LEVEL:
-        {
-            if (cond->ConditionValue2 >= COMP_TYPE_MAX)
-            {
-                TC_LOG_ERROR("sql.sql", "Guildlevel condition has invalid option (%u), skipped", cond->ConditionValue2);
-                return false;
-            }
-            if (cond->ConditionValue3)
-                TC_LOG_ERROR("sql.sql", "Guildlevel condition has useless data in value3 (%u)!", cond->ConditionValue3);
             break;
         }
         case CONDITION_HP_VAL:

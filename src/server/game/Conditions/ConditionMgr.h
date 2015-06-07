@@ -71,8 +71,7 @@ enum ConditionTypes
     CONDITION_ALIVE                 = 36,                   // 0                0              0                  true if unit is alive
     CONDITION_HP_VAL                = 37,                   // hpVal            ComparisonType 0                  true if unit's hp matches given value
     CONDITION_HP_PCT                = 38,                   // hpPct            ComparisonType 0                  true if unit's hp matches given pct
-    CONDITION_GUILD_LEVEL           = 39,                   // Gildenlevel      Level          Vergleichstyp
-    CONDITION_MAX                   = 40                    // MAX
+    CONDITION_MAX                   = 39                    // MAX
 };
 
 /*! Documentation on implementing a new ConditionSourceType:

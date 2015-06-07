@@ -61,7 +61,6 @@
 #include "Vehicle.h"
 #include "World.h"
 #include "WorldPacket.h"
-#include "Guild.h"
 #include "WorldSession.h"
 #ifdef ELUNA
 #include "LuaEngine.h"
@@ -12250,23 +12249,6 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
     float stack_bonus     = 1.0f;
     float non_stack_bonus = 1.0f;
 
-    //Guild-Level-System (Bonus: Reittempo)
-    uint8 bonusSpeed = 0;
-    if (GetTypeId() == TYPEID_PLAYER)
-    {
-        Player* player = ToPlayer();
-        if (Guild* guild = player->GetGuild())
-        {
-            if (!player->GetMap()->IsBattlegroundOrArena())
-            {
-                if (guild->HasLevelForBonus(GUILD_BONUS_REITTEMPO_1))
-                    bonusSpeed = 5;
-                if (guild->HasLevelForBonus(GUILD_BONUS_REITTEMPO_2))
-                    bonusSpeed = 10;
-            }
-        }
-    }
-
     switch (mtype)
     {
         // Only apply debuffs
@@ -12280,7 +12262,7 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
         {
             if (IsMounted()) // Use on mount auras
             {
-                main_speed_mod = GetMaxPositiveAuraModifier(SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED) + bonusSpeed;
+                main_speed_mod = GetMaxPositiveAuraModifier(SPELL_AURA_MOD_INCREASE_MOUNTED_SPEED);
                 stack_bonus     = GetTotalAuraMultiplier(SPELL_AURA_MOD_MOUNTED_SPEED_ALWAYS);
                 non_stack_bonus += GetMaxPositiveAuraModifier(SPELL_AURA_MOD_MOUNTED_SPEED_NOT_STACK) / 100.0f;
             }
@@ -12314,7 +12296,7 @@ void Unit::UpdateSpeed(UnitMoveType mtype, bool forced)
             }
             else if (IsMounted())
             {
-                main_speed_mod = GetMaxPositiveAuraModifier(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED) + bonusSpeed;
+                main_speed_mod = GetMaxPositiveAuraModifier(SPELL_AURA_MOD_INCREASE_MOUNTED_FLIGHT_SPEED);
                 stack_bonus     = GetTotalAuraMultiplier(SPELL_AURA_MOD_MOUNTED_FLIGHT_SPEED_ALWAYS);
             }
             else             // Use not mount (shapeshift for example) auras (should stack)

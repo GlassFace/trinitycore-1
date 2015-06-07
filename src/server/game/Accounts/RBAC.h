@@ -710,10 +710,7 @@ enum RBACPermissions
     RBAC_PERM_COMMAND_NPCBOT_INFO                            = 1106,
     RBAC_PERM_COMMAND_NPCBOT_HELPER                          = 1107,
     RBAC_PERM_COMMAND_NPCBOT_REVIVE                          = 1108,
-
-    RBAC_PERM_COMMAND_GUILD_LINFO                            = 1010,
-    RBAC_PERM_COMMAND_GUILD_SET_LEVEL                        = 1011,
-    RBAC_PERM_COMMAND_GUILD_GIVE_XP                          = 1012,
+    
     RBAC_PERM_MAX
 };
 

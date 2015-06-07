@@ -3967,10 +3967,10 @@ void Player::GiveXP(uint32 xp, Unit* victim, float group_rate)
 
     // XP to money conversion processed in Player::RewardQuest
     if(sWorld->getIntConfig(CONFIG_levelcap) == 1){
-    if (level >= 65 && !HasAchieved(1283) || level >= 65 && !HasAchieved(1285)) {
+    if (level >= 60 && !HasAchieved(1283) || level >= 60 && !HasAchieved(1285)) {
         ModifyMoney(xp * 0.5);
         return;
-    } else if (level >= 75 && !HasAchieved(1287) || level >= 75 && !HasAchieved(1286)) {
+    } else if (level >= 70 && !HasAchieved(1287) || level >= 70 && !HasAchieved(1286)) {
     ModifyMoney(xp * 0.5);
         return;
     } else if (level >= sWorld->getIntConfig(CONFIG_MAX_PLAYER_LEVEL)) {
@@ -6074,12 +6074,6 @@ void Player::BuildPlayerRepop()
     // convert player body to ghost
     SetHealth(1);
 
-    //Guild-Level-System (Bonus: Faster spirit)
-    if (!GetMap()->IsBattlegroundOrArena())
-        if (Guild* guild = GetGuild())
-            if (guild->HasLevelForBonus(GUILD_BONUS_SCHNELLER_GEIST))
-                SetSpeed(MOVE_RUN, 2.0f, true);
-
     SetMovement(MOVE_WATER_WALK);
     if (!GetSession()->isLogingOut())
         SetMovement(MOVE_UNROOT);
@@ -6126,9 +6120,6 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
 
     SetMovement(MOVE_LAND_WALK);
     SetMovement(MOVE_UNROOT);
-
-    //Guild-Level-System (Bonus: Faster spirit)
-    SetSpeed(MOVE_RUN, 1.0f, true);
 
     m_deathTimer = 0;
 
@@ -6458,15 +6449,6 @@ uint32 Player::DurabilityRepair(uint16 pos, bool cost, float discountMod, bool g
             uint32 costs = uint32(LostDurability*dmultiplier*double(dQualitymodEntry->quality_mod));
 
             costs = uint32(costs * discountMod * sWorld->getRate(RATE_REPAIRCOST));
-
-            //Guild-Level-System (Bonus: Guenstige Reperatur)
-            if (Guild* guild = GetGuild())
-            {
-                if (guild->HasLevelForBonus(GUILD_BONUS_REPERATUR_1))
-                    costs -= uint32(costs*0.25f);
-                if (guild->HasLevelForBonus(GUILD_BONUS_REPERATUR_2))
-                    costs -= uint32(costs*0.5f);
-            }
 
             if (costs == 0)                                   //fix for ITEM_QUALITY_ARTIFACT
                 costs = 1;
@@ -8298,15 +8280,6 @@ bool Player::RewardHonor(Unit* victim, uint32 groupsize, int32 honor, bool pvpto
         {
             bg->UpdatePlayerScore(this, SCORE_BONUS_HONOR, honor, false); //false: prevent looping
         }
-    }
-
-    //Guild-Level-System (Bonus: Ehre)
-    if (Guild* guild = GetGuild())
-    {
-        if (guild->HasLevelForBonus(GUILD_BONUS_EHRE_1))
-            honor_f *= 0.05f;
-        if (guild->HasLevelForBonus(GUILD_BONUS_EHRE_2))
-            honor_f *= 0.1f;
     }
 
     if (sWorld->getBoolConfig(CONFIG_PVP_TOKEN_ENABLE) && pvptoken)
@@ -16435,19 +16408,6 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
     // Give player extra money if GetRewOrReqMoney > 0 and get ReqMoney if negative
     if (quest->GetRewOrReqMoney())
         moneyRew += quest->GetRewOrReqMoney();
-
-    //Guild-Level-System (Bonus: QuestXP)
-    if (Guild* guild = GetGuild())
-    {
-        //QuestXP for the Guild
-        guild->GiveXp(50000);
-
-        //GuildXP-Bonus
-        if (guild->HasLevelForBonus(GUILD_BONUS_XP_1))
-            XP += uint32(XP*0.05f);
-        if (guild->HasLevelForBonus(GUILD_BONUS_XP_2))
-            XP += uint32(XP*0.1f);
-    }
 
     if (moneyRew)
     {

@@ -540,10 +540,6 @@ enum CharacterDatabaseStatements
 
     MAX_CHARACTERDATABASE_STATEMENTS,
     
-    //Guild-Level-System
-    CHAR_SEL_GUILD_BONUS_INFO,
-    CHAR_SEL_GUILD_LEVEL_INFO,
-    CHAR_SEL_GUILD_XP_FOR_NEXT_LEVEL,
     // Old NPCBots
     CHAR_SEL_NPCBOTS,
     CHAR_DEL_NPCBOTS,
