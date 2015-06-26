@@ -390,7 +390,7 @@ void Map::ScriptsProcess()
                     Unit* sourceUnit = source->ToUnit();
                     if (!sourceUnit)
                     {
-                        TC_LOG_ERROR("scripts", "%s source object (%s) is not an unit, skipping.", step.script->GetDebugInfo().c_str(), source->GetGUID().ToString().c_str());
+                        //TC_LOG_ERROR("scripts", "%s source object (%s) is not an unit, skipping.", step.script->GetDebugInfo().c_str(), source->GetGUID().ToString().c_str());
                         break;
                     }
                     switch (step.script->Talk.ChatType)
