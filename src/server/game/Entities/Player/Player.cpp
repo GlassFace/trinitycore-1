@@ -532,7 +532,8 @@ inline void KillRewarder::_RewardXP(Player* player, float rate)
             _maxNotGrayMember->getLevel() >= player->getLevel())
             xp = _isFullXP ?
                 uint32(xp * rate) :             // Reward FULL XP if all group members are not gray.
-                uint32(xp * rate / 2) + 1;      // Reward only HALF of XP if some of group members are gray.
+                //uint32(xp * rate / 2) + 1;      // Reward only HALF of XP if some of group members are gray.
+                uint32(xp * rate);
         else
             xp = 0;
     }
@@ -16391,8 +16392,16 @@ void Player::RewardQuest(Quest const* quest, uint32 reward, Object* questGiver, 
 
     bool rewarded = (m_RewardedQuests.find(quest_id) != m_RewardedQuests.end());
 
+    uint8 jilv = rand()%99+1;
+        uint8 baoji;
+        if (jilv >= 70) {
+           baoji = rand()%3+2;
+        } else {
+           baoji = 1;
+        }
+
     // Not give XP in case already completed once repeatable quest
-    uint32 XP = rewarded && !quest->IsDFQuest() ? 0 : uint32(quest->XPValue(this)*sWorld->getRate(RATE_XP_QUEST));
+    uint32 XP = rewarded && !quest->IsDFQuest() ? 0 : uint32(quest->XPValue(this)*sWorld->getRate(RATE_XP_QUEST) * baoji);
 
     // handle SPELL_AURA_MOD_XP_QUEST_PCT auras
     Unit::AuraEffectList const& ModXPPctAuras = GetAuraEffectsByType(SPELL_AURA_MOD_XP_QUEST_PCT);
