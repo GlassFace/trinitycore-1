@@ -34,6 +34,7 @@ EndContentData */
 #include "ScriptedCreature.h"
 #include "Spell.h"
 #include "Player.h"
+#include "AchievementMgr.h"
 
 /*#####
 # item_only_for_flight
@@ -412,6 +413,63 @@ public:
     }
 };
 
+
+class item_jiushi : public ItemScript
+{
+public:
+	item_jiushi() : ItemScript("item_jiushi") { }
+
+	bool OnUse(Player* player, Item* item, SpellCastTargets const & /*targets*/) override
+	{
+		if (AchievementEntry const* achievementEntry = sAchievementMgr->GetAchievement(1283))
+			player->CompletedAchievement(achievementEntry);
+		//player->SendNewItem(item, -1, true, false);
+		return false;
+	}
+};
+
+class item_jiushiqibing : public ItemScript
+{
+public:
+	item_jiushiqibing() : ItemScript("item_jiushiqibing") { }
+
+	bool OnUse(Player* player, Item* item, SpellCastTargets const & /*targets*/) override
+	{
+		if (AchievementEntry const* achievementEntry = sAchievementMgr->GetAchievement(1285))
+			player->CompletedAchievement(achievementEntry);
+		//player->SendNewItem(item, -1, true, false);
+		return false;
+	}
+};
+
+class item_waiyu : public ItemScript
+{
+public:
+	item_waiyu() : ItemScript("item_waiyu") { }
+
+	bool OnUse(Player* player, Item* item, SpellCastTargets const & /*targets*/) override
+	{
+		if (AchievementEntry const* achievementEntry = sAchievementMgr->GetAchievement(1287))
+			player->CompletedAchievement(achievementEntry);
+		//player->SendNewItem(item, -1, true, false);
+		return false;
+	}
+};
+
+class item_waiyuqibing : public ItemScript
+{
+public:
+	item_waiyuqibing() : ItemScript("item_waiyuqibing") { }
+
+	bool OnUse(Player* player, Item* item, SpellCastTargets const & /*targets*/) override
+	{
+		if (AchievementEntry const* achievementEntry = sAchievementMgr->GetAchievement(1286))
+			player->CompletedAchievement(achievementEntry);
+			//player->SendNewItem(item, -1, true, false);
+		return false;
+	}
+};
+
 void AddSC_item_scripts()
 {
     new item_only_for_flight();
@@ -425,4 +483,8 @@ void AddSC_item_scripts()
     new item_dehta_trap_smasher();
     new item_trident_of_nazjan();
     new item_captured_frog();
+	new item_jiushi();
+	new item_jiushiqibing();
+	new item_waiyu();
+	new item_waiyuqibing();
 }

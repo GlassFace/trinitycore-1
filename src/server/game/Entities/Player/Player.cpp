@@ -27963,3 +27963,10 @@ void Player::SendSupercededSpell(uint32 oldSpell, uint32 newSpell)
     data << uint32(oldSpell) << uint32(newSpell);
     GetSession()->SendPacket(&data);
 }
+
+void Player::wanchengchengjiu(uint32 entry)
+{
+	if (AchievementEntry const* achievementEntry = sAchievementMgr->GetAchievement(entry))
+		CompletedAchievement(achievementEntry);
+}
+

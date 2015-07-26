@@ -389,7 +389,7 @@ public:
             DoZoneInCombat();
         }
 
-        void ChargeCheck()
+        /*void ChargeCheck()
         {
             Unit* target = SelectTarget(SELECT_TARGET_FARTHEST, 0, 200, false);
             if (target && (!me->IsWithinCombatRange(target, FLAME_CHARGE_DISTANCE)))
@@ -399,7 +399,7 @@ public:
                 DoCast(target, SPELL_CHARGE);
                 Talk(EMOTE_AZZINOTH_GAZE);
             }
-        }
+        }*/
 
         void EnrageCheck()
         {
@@ -444,7 +444,7 @@ public:
 
             if (CheckTimer <= diff)
             {
-                ChargeCheck();
+                //ChargeCheck();
                 EnrageCheck();
                 CheckTimer = 1000;
             } else CheckTimer -= diff;
