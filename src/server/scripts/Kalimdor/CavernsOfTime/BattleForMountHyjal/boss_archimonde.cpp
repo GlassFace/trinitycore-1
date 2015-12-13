@@ -29,6 +29,7 @@ EndScriptData */
 #include "SpellAuras.h"
 #include "hyjal_trash.h"
 #include "Player.h"
+#include "AchievementMgr.h"
 
 enum Texts
 {
@@ -365,6 +366,8 @@ public:
         {
             hyjal_trashAI::JustDied(killer);
             Talk(SAY_DEATH);
+			if (instance)
+				instance->DoCompleteAchievement(695);
 
             instance->SetData(DATA_ARCHIMONDEEVENT, DONE);
         }

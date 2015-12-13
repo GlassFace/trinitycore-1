@@ -327,13 +327,13 @@ void WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
         return;
     }
 
-    if (realmIndex != realmID)
+    /*if (realmIndex != realmID)
     {
         SendAuthResponseError(REALM_LIST_REALM_NOT_FOUND);
         TC_LOG_ERROR("network", "WorldSocket::HandleAuthSession: Sent Auth Response (bad realm).");
         DelayedCloseSocket();
         return;
-    }
+    }*/
 
     std::string os = fields[8].GetString();
 
@@ -356,13 +356,13 @@ void WorldSocket::HandleAuthSession(WorldPacket& recvPacket)
     sha.UpdateBigNumbers(&k, NULL);
     sha.Finalize();
 
-    if (memcmp(sha.GetDigest(), digest, 20))
+    /*if (memcmp(sha.GetDigest(), digest, 20))
     {
         SendAuthResponseError(AUTH_FAILED);
         TC_LOG_ERROR("network", "WorldSocket::HandleAuthSession: Authentication failed for account: %u ('%s') address: %s", id, account.c_str(), address.c_str());
         DelayedCloseSocket();
         return;
-    }
+    }*/
 
     ///- Re-check ip locking (same check as in auth).
     if (fields[3].GetUInt8() == 1) // if ip is locked
